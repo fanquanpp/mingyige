@@ -8,10 +8,15 @@
   background: #000;
 }
 
-/* Spik 退场中间态：整容器淡出（合成层先释放，220ms 后才切换视图） */
+/* Spik 退场中间态：整个容器淡出（浏览器绘制此帧后，下一帧才切视图）。
+   transition 前后都声明：恢复时（切页后）新页面从 0 淡入到 1。 */
 .stageFading {
   opacity: 0;
   transition: opacity 0.2s ease-out;
+}
+
+.app {
+  transition: opacity 0.25s ease-out;
 }
 
 /* ---------- S p i k 跳过按钮（右上角，开场/海报/共鸣三阶段常驻） ---------- */

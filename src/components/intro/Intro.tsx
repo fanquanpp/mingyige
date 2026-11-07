@@ -33,8 +33,15 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setReady(true), TOTAL_DURATION_MS);
-    return () => window.clearTimeout(timer);
+    const timer = window.setTimeout(() => {
+      // 供 music.ts 的起播兜底判定：动画播完后点击才算「进站手势」
+      document.body.setAttribute('data-intro-ready', '');
+      setReady(true);
+    }, TOTAL_DURATION_MS);
+    return () => {
+      window.clearTimeout(timer);
+      document.body.removeAttribute('data-intro-ready');
+    };
   }, []);
 
   // ready 后在 window 层监听：舞台内外的任意位置（含磨砂补边）点击都生效。

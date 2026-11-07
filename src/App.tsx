@@ -56,14 +56,20 @@ export default function App() {
 
   /* S p i k 退场：直接 setView 会在同一帧卸载带 fixed 合成层的 Intro + 挂载页面，
      合成层销毁与 Home 首帧布局竞态 → 旧舞台快照叠印在新页面上（崩坏画面）。
-     先淡出舞台 220ms，让合成层先释放，再切视图。 */
+     三步序：淡出（浏览器必须实际绘制这一帧）→ 等下一帧再切视图 → 切页后恢复不透明。
+     关键：淡出与切页不能在同一个 setTimeout 里被 React 批处理成一帧。 */
   const [fading, setFading] = useState(false);
   const skip = (next: PageView) => {
     if (fading) return;
     setFading(true);
+    // 220ms：.stageFading 的 opacity 过渡完成并被浏览器绘制
     window.setTimeout(() => {
-      setFading(false);
-      setView(next);
+      // 再等一个 rAF+超时，确保淡出帧已上屏（与 setView 分离，避免批处理合并）
+      requestAnimationFrame(() => {
+        setView(next);
+        // 切页提交后再移除 fading，新页面从 opacity 0 正常淡入
+        requestAnimationFrame(() => setFading(false));
+      });
     }, 220);
   };
 

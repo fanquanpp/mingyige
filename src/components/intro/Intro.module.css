@@ -30,7 +30,7 @@
   position: fixed;
   inset: -60px;
   z-index: 0;
-  background-image: url('../../images/intro/concert-bg.jpg');
+  background-image: url('../../assets/intro/concert-bg.jpg');
   background-size: cover;
   background-position: center;
   filter: blur(36px) brightness(0.52) saturate(1.12);
@@ -40,12 +40,12 @@
 }
 
 .backdropPoster {
-  background-image: url('../../images/intro/poster-landscape.png');
+  background-image: url('../../assets/intro/poster-landscape.png');
 }
 
 @media (orientation: portrait) {
   .backdropPoster {
-    background-image: url('../../images/intro/poster-portrait.jpg');
+    background-image: url('../../assets/intro/poster-portrait.jpg');
   }
 }
 
@@ -54,7 +54,7 @@
 .bg {
   position: absolute;
   inset: 0;
-  background-image: url('../../images/intro/concert-bg.jpg');
+  background-image: url('../../assets/intro/concert-bg.jpg');
   background-size: cover;
   background-position: center;
   z-index: 0;
@@ -377,7 +377,7 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background-image: url('../../images/intro/poster-landscape.png');
+  background-image: url('../../assets/intro/poster-landscape.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -434,7 +434,7 @@
   .line10 { --t: 76%;   --s: clamp(22px, 7vw, 36px);   --pl: 0; --pr: 0; }
 
   .poster {
-    background-image: url('../../images/intro/poster-portrait.jpg');
+    background-image: url('../../assets/intro/poster-portrait.jpg');
   }
 }
 
