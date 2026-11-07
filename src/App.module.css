@@ -6,6 +6,9 @@
   display: grid;
   place-items: center;
   background: #000;
+  /* 舞台期（intro/resonance 或 stale 卸载期）锁死高度铺满：
+     grid place-items 会把非满屏子项压缩居中——stale 舞台叠在页面上时
+     必须保证它是全屏底版而不是半屏卡片 */
 }
 
 /* 舞台退场中间态：容器淡出（leaving 阶段——浏览器绘制此帧后，下一帧才切视图）。
@@ -20,8 +23,13 @@
 }
 
 /* stale 旧舞台专用隐藏壳：只藏旧舞台自身，新页面（同容器内）保持完全可见。
-   相比把整个 .app 藏掉——那会让新页在旧舞台卸载前一直不可见 */
+   壳本身 absolute 铺满容器：grid 的 place-items 会把「第二个 grid item」
+   （stale 舞台）压成内容高度并居中排列——旧舞台必须脱离网格流，
+   否则 100dvh 的舞台会被压成半屏卡片叠在新页上（崩坏残影形态之一） */
 .stageHidden {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
 }
