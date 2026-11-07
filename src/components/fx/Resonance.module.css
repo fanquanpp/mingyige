@@ -3,7 +3,10 @@
    注意：黑幕不揭开——灯光熄灭后保持纯黑直接切主页，避免闪现底下的开场海报。 */
 
 .resonance {
-  position: fixed;
+  /* absolute（而非 fixed）：挂进 App 舞台容器，随其生死——
+     fixed 层卸载/重挂时 containing block 失效再重建是崩坏残影根源（同 Intro backdrop）。
+     现役/stale 实例都是全屏覆盖（App 容器在舞台期就是满屏），视觉等价 */
+  position: absolute;
   inset: 0;
   z-index: 6;
   background: #02060c;
@@ -63,9 +66,9 @@
     fadeOut 0.3s ease-in 2.25s forwards;
 }
 
-/* 常驻 logo：随黑幕一同浮现 */
+/* 常驻 logo：随黑幕一同浮现（absolute，同 .resonance 注释） */
 .resLogo {
-  position: fixed;
+  position: absolute;
   top: 2dvh;
   left: 2.5dvw;
   z-index: 2;

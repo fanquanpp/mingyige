@@ -27,7 +27,11 @@
  * inset 负值做出血，避免模糊后在屏幕边缘发虚露底。
  */
 .backdrop {
-  position: fixed;
+  /* absolute（而非 fixed）：舞台本身锁视口大小且 overflow:hidden，
+     出血层挂进舞台裁切内——fixed 层在组件卸载/重挂时 containing block
+     瞬时失效再重建，Chrome 会把它画到文档流错误位置（崩坏残影的根源）。
+     absolute 挂在 .intro 下随舞台生死，无此问题 */
+  position: absolute;
   inset: -60px;
   z-index: 0;
   background-image: url('../../assets/intro/concert-bg.webp');
@@ -35,8 +39,6 @@
   background-position: center;
   filter: blur(36px) brightness(0.52) saturate(1.12);
   transform: translateZ(0); /* 隔离成独立合成层：大模糊只栅格化一次 */
-  /* fixed 出血层裁回视口：-60px 出血不再撑出文档横向宽度（横滚条根因之一） */
-  clip-path: inset(0);
 }
 
 .backdropPoster {
@@ -212,7 +214,8 @@
 /* ---------- 洛天依手写签名（右下角常驻，悬浮于磨砂层与海报之上） ---------- */
 
 .signature {
-  position: fixed;
+  /* absolute：随舞台定位（同 backdrop，见其注释——fixed 在卸载/重挂时产生崩坏残影） */
+  position: absolute;
   right: 2%;
   bottom: 2%;
   width: clamp(220px, 20vw, 330px);
@@ -465,9 +468,9 @@
   will-change: auto;
 }
 
-/* 共鸣提示：悬浮在画幅下方的磨砂补边上（fixed 贴视口底部，脱离舞台裁切） */
+/* 共鸣提示：贴舞台底部（absolute——同 backdrop 注释，fixed 在卸载/重挂时产生崩坏残影） */
 .tapHint {
-  position: fixed;
+  position: absolute;
   bottom: 2dvh;
   left: 0;
   right: 0;
