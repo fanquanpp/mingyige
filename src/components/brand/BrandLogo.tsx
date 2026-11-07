@@ -21,7 +21,7 @@ export default function BrandLogo({
   const mark = (
     <img
       className={styles.spark}
-      src="/images/icons/icon-tianyi.svg"
+      src="images/icons/icon-tianyi.svg"
       alt=""
       aria-hidden="true"
     />

@@ -132,7 +132,7 @@ export default function MusicPanel() {
               <circle cx="100" cy="100" r="62" className={styles.groove} />
               <circle cx="100" cy="100" r="50" className={styles.grooveAccent} />
             </svg>
-            <img className={styles.discLabel} src="/images/brand/site-seal.png" alt="" />
+            <img className={styles.discLabel} src="images/brand/site-seal.png" alt="" />
           </div>
         </div>
 

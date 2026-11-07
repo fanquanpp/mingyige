@@ -18,7 +18,7 @@ export default function Home({ onReplay }: { onReplay: () => void }) {
         <i className={styles.bub} style={{ left: '88%', top: '72%', width: 16, height: 16 }} />
         <img
           className={styles.heroWatermark}
-          src="/images/brand/tianyi-signature.png"
+          src="images/brand/tianyi-signature.png"
           alt=""
           aria-hidden="true"
         />

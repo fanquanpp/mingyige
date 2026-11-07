@@ -40,103 +40,6 @@ const audio = new Audio(DEFAULT_TRACK.src);
 audio.volume = 0.35;
 audio.preload = 'auto';
 
-/* ---------- 音频频谱分析（底部频谱条用） ----------
-   惰性建图：首次真正出声（用户手势后）才创建 AudioContext 并接管 <audio> 的输出。
-   注意：createMediaElementSource 会把元素音频改道进 WebAudio 图，
-   必须连回 destination 否则静音；对同一元素只能调用一次（复用 srcNode）。 */
-
-let audioCtx: AudioContext | null = null;
-let analyser: AnalyserNode | null = null;
-let freqData: Uint8Array<ArrayBuffer> | null = null;
-/** 对数映射后的 64 条频谱（0–255），getFrequencyBars 返回的稳定缓冲 */
-let bars = new Uint8Array(64);
-/** 每条频谱覆盖的 bin 区间边界（建图时预计算，不逐帧算） */
-let barBins: number[] | null = null;
-let graphFailed = false;
-
-function ensureAudioGraph(): boolean {
-  if (analyser) return true;
-  if (graphFailed) return false;
-  try {
-    const Ctx: typeof AudioContext =
-      window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!Ctx) throw new Error('no webaudio');
-    audioCtx = new Ctx();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    analyser.smoothingTimeConstant = 0.8;
-    const src = audioCtx.createMediaElementSource(audio);
-    src.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    freqData = new Uint8Array(analyser.frequencyBinCount);
-
-    // 对数频率映射：30Hz–16kHz 均分为 64 条（低频按倍程均摊，视觉上分布均匀）
-    const binCount = analyser.frequencyBinCount;
-    const nyquist = audioCtx.sampleRate / 2;
-    const minF = 30;
-    const maxF = Math.min(16000, nyquist);
-    barBins = [];
-    for (let i = 0; i <= bars.length; i++) {
-      const f = minF * (maxF / minF) ** (i / bars.length);
-      barBins.push(Math.min(binCount - 1, Math.round((f / nyquist) * binCount)));
-    }
-    return true;
-  } catch {
-    // WebAudio 不可用（隐私模式/老内核）：频谱条退化为静态装饰，不影响发声
-    graphFailed = true;
-    audioCtx = null;
-    analyser = null;
-    return false;
-  }
-}
-
-/** 取当前 64 条频谱（0–255）。未建图/暂停/上下文未运行时全 0。
-    AudioContext suspended/interrupted 时（iOS 切后台/来电）频谱数据会冻结在旧值——
-    必须检查 state==='running' 再读，否则移动端会出现满格不动的条（MDN state 文档建议） */
-export function getFrequencyBars(): Uint8Array {
-  if (
-    !analyser ||
-    !freqData ||
-    !barBins ||
-    audio.paused ||
-    !audioCtx ||
-    audioCtx.state !== 'running'
-  ) {
-    return bars.fill(0);
-  }
-  analyser.getByteFrequencyData(freqData);
-  for (let i = 0; i < bars.length; i++) {
-    const lo = barBins[i];
-    const hi = Math.max(lo + 1, barBins[i + 1]);
-    let sum = 0;
-    for (let j = lo; j < hi; j++) sum += freqData[j];
-    bars[i] = sum / (hi - lo);
-  }
-  return bars;
-}
-
-/** 手势时机调用（首次出声前）：建图并恢复 AudioContext */
-export function primeAnalyser() {
-  if (ensureAudioGraph() && audioCtx) {
-    // suspended（自动播放拦截）与 interrupted（iOS 切后台/来电）都需恢复；
-    // 播放中被打断时靠 statechange 自动续——音频还在响而频谱条静止就是漏了这条
-    if (audioCtx.state === 'suspended' || audioCtx.state === 'interrupted') {
-      audioCtx.resume().catch(() => {
-        /* 下次手势再试 */
-      });
-    }
-    audioCtx.onstatechange = () => {
-      if (
-        (audioCtx?.state === 'interrupted' || audioCtx?.state === 'suspended') &&
-        state.status === 'playing' &&
-        !audio.paused
-      ) {
-        audioCtx?.resume().catch(() => {});
-      }
-    };
-  }
-}
-
 // 开发环境暴露调试句柄（构建产物中剔除）
 if (import.meta.env.DEV) {
   (window as unknown as Record<string, unknown>).__music = audio;
@@ -271,7 +174,6 @@ export function armMusicOnGesture() {
 
 /** 用户主动开始播放：接管播放权，原标签经 storage 事件自动让位 */
 export function startMusic() {
-  primeAnalyser();
   claimLeadership();
   update({ status: 'playing' });
   apply();
@@ -310,7 +212,6 @@ export function playTrack(id: string) {
   }
   const track = findTrack(id);
   if (!track) return;
-  primeAnalyser();
   claimLeadership();
   if (id !== state.currentId) {
     audio.src = track.src;

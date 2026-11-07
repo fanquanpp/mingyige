@@ -108,8 +108,6 @@
   opacity: 0.55;
 }
 
-/* 底部装饰已由 WaveBars 组件（音频响应频谱条）接管，见 site/WaveBars.* */
-
 /* ---------- 移动端：顶栏保持单行（logo / 导航槽 / 控件同排），
    PillNav 窄屏自动收合成汉堡按钮（collapse="auto"） ---------- */
 

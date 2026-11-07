@@ -4,7 +4,6 @@ import { MENU_ITEMS, PAGE_NAV, type PageView } from '../../navigation';
 import BrandLogo from '../brand/BrandLogo';
 import PillNav from '../nav/PillNav';
 import StaggeredMenu from '../nav/StaggeredMenu';
-import WaveBars from './WaveBars';
 import styles from './SiteChrome.module.css';
 
 /* 各页浏览器标签标题 */
@@ -99,9 +98,6 @@ export default function SiteChrome({
           </button>
         </div>
       </header>
-
-      {/* 底部频谱条：音频响应装饰（播放时 64 条对数频谱律动，暂停退化为静止细线） */}
-      <WaveBars />
 
       {children}
     </main>

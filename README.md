@@ -79,3 +79,12 @@ npm run preview   # 预览构建产物
 ## 设计约束
 
 见 [docs/design-rules.md](docs/design-rules.md)——硬性禁令清单，任何 UI 先过这道检查。
+
+## 部署（GitHub Pages）
+
+- 仓库：[fanquanpp/mingyige](https://github.com/fanquanpp/mingyige)，Pages 由 `.github/workflows/deploy-pages.yml` 自动构建部署（push main 触发）
+- 访问地址：https://fanquanpp.github.io/mingyige/
+- **大素材不在仓库**：`public/audio/`（2GB 音源）与 `public/video/` 超出 GitHub 限制已 gitignore。部署后线上音乐/视频会 404；补素材方式任选：
+  1. 用 [Git LFS](https://git-lfs.com) 追踪后强推（`git lfs install && git lfs track "public/audio/**"`，LFS 免费额度 1GB）
+  2. 或把音频传到外部对象存储后改 `src/data/site-content.ts` 的 src 为外链
+- 构建产物 base 为相对路径（`base: './'`），dev/preview 不受影响

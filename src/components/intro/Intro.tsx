@@ -99,7 +99,7 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
 
         {/* 洛天依手写签名：右下角常驻水印装饰，缓慢淡入 */}
         <motion.img
-          src="/images/brand/tianyi-signature.png"
+          src="images/brand/tianyi-signature.png"
           alt=""
           className={styles.signature}
           initial={{ opacity: 0 }}
