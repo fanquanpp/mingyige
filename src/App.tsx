@@ -66,11 +66,9 @@ export default function App() {
 
   const transitionTo = (next: View) => {
     if (leaving || view === next) return;
-    // intro→resonance 同舞台换景（Intro 保持挂载在其下），不涉及卸载，直接切
-    if (view === 'intro' && next === 'resonance') {
-      setView(next);
-      return;
-    }
+    // 所有路径统一走退场序（不再对 intro→resonance 直切豁免——
+    // 直切时 Intro 的 fixed backdrop 与 Resonance 黑幕叠加挂载，
+    // 后续切 home 时一起销毁，正是桌面端「轻触共鸣后崩坏」的根源）
     setLeaving(true);
     window.setTimeout(() => {
       requestAnimationFrame(() => {
