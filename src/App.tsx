@@ -66,18 +66,24 @@ export default function App() {
 
   const transitionTo = (next: View) => {
     if (leaving || view === next) return;
-    // 所有路径统一走退场序（不再对 intro→resonance 直切豁免——
-    // 直切时 Intro 的 fixed backdrop 与 Resonance 黑幕叠加挂载，
-    // 后续切 home 时一起销毁，正是桌面端「轻触共鸣后崩坏」的根源）
+    // intro→resonance：同舞台换景，Intro 不卸载不重挂（stale 重挂会让 motion initial
+    // 重新生效——文字重新 blur 起步，即「轻触共鸣还是那样」的根源）。
+    // 安卓冻结问题由 frozen=true（动画全转终态）单独解决。
+    if (view === 'intro' && next === 'resonance') {
+      setView(next);
+      return;
+    }
+    // 跨卸载切换（resonance→home / spik / 重看开场）：淡出 → 切页 → 旧舞台延迟卸载
     setLeaving(true);
     window.setTimeout(() => {
       requestAnimationFrame(() => {
         setStaleView(view); // 旧舞台记入待卸载清单
         setView(next);
-        setLeaving(false);
-        // 新页渲染稳定后再真正卸载旧舞台（合成层此时销毁无害）
         window.clearTimeout(unmountTimer.current);
-        unmountTimer.current = window.setTimeout(() => setStaleView(null), 600);
+        unmountTimer.current = window.setTimeout(() => {
+          setStaleView(null);
+          setLeaving(false); // 旧舞台卸载完才恢复不透明（新页这 600ms 内保持可见度渐变）
+        }, 600);
       });
     }, 220);
   };
@@ -119,9 +125,17 @@ export default function App() {
         S p i k
       </motion.button>
       {/* 退场中的旧舞台：切页后继续挂载 600ms（新页已完整绘制），合成层届时才销毁。
-          视觉上处于 opacity:0（.stageFading），且 pointer-events 关闭不挡新页交互 */}
-      {staleView === 'intro' && <Intro key={`stale-${runId}`} onEnter={() => {}} />}
-      {staleView === 'resonance' && <Resonance key={`stale-${runId}`} onDone={() => {}} />}
+          stageHidden：仅隐藏旧舞台自身（不影响新页可见性），pointer-events 关闭不挡交互 */}
+      {staleView === 'intro' && (
+        <div className={styles.stageHidden}>
+          <Intro key={`stale-${runId}`} onEnter={() => {}} />
+        </div>
+      )}
+      {staleView === 'resonance' && (
+        <div className={styles.stageHidden}>
+          <Resonance key={`stale-${runId}`} onDone={() => {}} />
+        </div>
+      )}
       {/* 现役舞台：共鸣页黑幕合拢期间开场画面挂载其下（渐暗过渡）；leaving 期间冻结 onEnter。
           frozen=true：Intro 所有动画立即暂停定格——安卓 WebView 上被遮住的动画会被冻结在
           中间帧（blur 半途/重绘残影），这就是「正常进入崩坏」在手机上的形态 */}
