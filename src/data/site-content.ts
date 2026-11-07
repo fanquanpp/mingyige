@@ -34,7 +34,7 @@ export const ALBUMS: AlbumSection[] = [
     title: '依如初见',
     year: '2022',
     subtitle: '十周年纪念专辑',
-    cover: 'images/albums/yiruchujian.jpg',
+    cover: 'images/albums/yiruchujian.webp',
     tracks: [
       { id: 'yiruchujian-01', title: '心印', src: 'audio/albums/yiruchujian/yiruchujian-01.mp3', lyric: 'lyrics/yiruchujian-01.json' },
       { id: 'yiruchujian-02', title: '66CCFF', src: 'audio/albums/yiruchujian/yiruchujian-02.mp3', lyric: 'lyrics/yiruchujian-02.json' },
@@ -53,7 +53,7 @@ export const ALBUMS: AlbumSection[] = [
     title: '无尽蓝',
     year: '2022',
     subtitle: '十周年纪念专辑 · 首张 ACE AI 声库',
-    cover: 'images/albums/wujinlan.jpg',
+    cover: 'images/albums/wujinlan.webp',
     tracks: [
       { id: 'wujinlan-01', title: '热带夜', src: 'audio/albums/wujinlan/wujinlan-01.mp3', lyric: 'lyrics/wujinlan-01.json' },
       { id: 'wujinlan-02', title: '万能处方', src: 'audio/albums/wujinlan/wujinlan-02.mp3', lyric: 'lyrics/wujinlan-02.json' },
@@ -72,7 +72,7 @@ export const ALBUMS: AlbumSection[] = [
     title: '再生',
     year: '2024',
     subtitle: '十二周年纪念专辑',
-    cover: 'images/albums/zaisheng.jpg',
+    cover: 'images/albums/zaisheng.webp',
     tracks: [
       { id: 'zaisheng-01', title: '再声 Recall', src: 'audio/albums/zaisheng/zaisheng-01.mp3', lyric: 'lyrics/zaisheng-01.json' },
       { id: 'zaisheng-02', title: '蝴蝶', src: 'audio/albums/zaisheng/zaisheng-02.mp3', lyric: 'lyrics/zaisheng-02.json' },
@@ -93,7 +93,7 @@ export const ALBUMS: AlbumSection[] = [
     title: '四重奏',
     year: '2026',
     subtitle: '十四周年纪念专辑 · 一体四面',
-    cover: 'images/albums/sichongzou.jpg',
+    cover: 'images/albums/sichongzou.webp',
     tracks: [
       { id: 'sichongzou-01', title: '心音', src: 'audio/albums/sichongzou/sichongzou-01.mp3', lyric: 'lyrics/sichongzou-01.json' },
       { id: 'sichongzou-02', title: '风之子', src: 'audio/albums/sichongzou/sichongzou-02.mp3', lyric: 'lyrics/sichongzou-02.json' },
@@ -114,7 +114,7 @@ export const ALBUMS: AlbumSection[] = [
     title: 'Lost In Tianyi',
     year: '2018',
     subtitle: '2018 官方专辑 · 九曲全员阵容',
-    cover: 'images/albums/lostintianyi.jpg',
+    cover: 'images/albums/lostintianyi.webp',
     tracks: [
       { id: 'lostintianyi-01', title: '8102', src: 'audio/albums/lostintianyi/lostintianyi-01.mp3', lyric: 'lyrics/lostintianyi-01.json' },
       { id: 'lostintianyi-02', title: '哒哒哒', src: 'audio/albums/lostintianyi/lostintianyi-02.mp3', lyric: 'lyrics/lostintianyi-02.json' },
@@ -155,10 +155,10 @@ export interface GalleryItem {
 }
 
 export const GALLERY: GalleryItem[] = [
-  { src: 'images/gallery/luotianyi-illus-wide.jpg', title: '洛天依插画（横版）', note: '白裙 · 水晶琴键', category: '插画' },
-  { src: 'images/gallery/luotianyi-illus-tall.jpg', title: '洛天依插画（竖版）', note: '上一幅的竖构图', category: '插画' },
-  { src: 'images/gallery/luotianyi-group-water.jpg', title: '洛天依群像', note: '荷塘水波 · 夏日', category: '插画' },
+  { src: 'images/gallery/luotianyi-illus-wide.webp', title: '洛天依插画（横版）', note: '白裙 · 水晶琴键', category: '插画' },
+  { src: 'images/gallery/luotianyi-illus-tall.webp', title: '洛天依插画（竖版）', note: '上一幅的竖构图', category: '插画' },
+  { src: 'images/gallery/luotianyi-group-water.webp', title: '洛天依群像', note: '荷塘水波 · 夏日', category: '插画' },
   { src: 'images/gallery/vsinger-group-art.webp', title: 'VOCALOID CHINA PROJECT', note: '官方插画 · illust ideolo@NEKO WORKI', category: '官方物料' },
   { src: 'images/gallery/project-poster.webp', title: '洛天依立绘', note: '透明底素材', category: '官方物料' },
-  { src: 'images/brand/site-seal.png', title: '洛天依圆标', note: '站章', category: '品牌标识' }
+  { src: 'images/brand/site-seal.webp', title: '洛天依圆标', note: '站章', category: '品牌标识' }
 ];

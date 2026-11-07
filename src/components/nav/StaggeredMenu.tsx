@@ -285,7 +285,7 @@ export default function StaggeredMenu({
           </ul>
           <img
             className="sm-panel-sign"
-            src="images/brand/tianyi-signature.png"
+            src="images/brand/tianyi-signature.webp"
             alt=""
             aria-hidden="true"
           />
