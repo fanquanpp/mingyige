@@ -1,0 +1,9 @@
+node_modules
+dist
+*.local
+.DS_Store
+.mimosa/
+
+# 大体积音视频素材（>GitHub 限制，部署时另行上传或用 LFS）
+public/audio/
+public/video/

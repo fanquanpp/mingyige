@@ -1,0 +1,49 @@
+.app {
+  width: 100%;
+  /* min-height 而非 height：主页内容超过一屏时容器随之撑开，
+     否则 place-items 居中会把页面顶部对称裁出滚动起点之外 */
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+/* Spik 退场中间态：整容器淡出（合成层先释放，220ms 后才切换视图） */
+.stageFading {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+/* ---------- S p i k 跳过按钮（右上角，开场/海报/共鸣三阶段常驻） ---------- */
+
+/*
+ * 严格扁平：无背景、无边框、无圆角弧形、无荧光色——
+ * 低透明度的浅色手写体文字 + 波浪线，hover 仅提高文字亮度。
+ */
+.skipBtn {
+  position: fixed;
+  top: 2dvh;
+  right: 2.5dvw;
+  z-index: 7;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 4px;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(232, 247, 255, 0.66);
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  text-decoration: underline wavy;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: rgba(240, 250, 255, 0.5);
+  text-underline-offset: 8px;
+}
+
+.skipBtn:hover {
+  color: rgba(240, 250, 255, 0.95);
+  text-decoration-color: rgba(240, 250, 255, 0.8);
+}

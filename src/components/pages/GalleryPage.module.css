@@ -1,0 +1,151 @@
+/* 图集页：响应式网格（不裁切原图）+ 点击放大的灯箱。 */
+
+.header {
+  padding: clamp(108px, 14vh, 150px) clamp(16px, 3vw, 48px) 10px;
+}
+
+.title {
+  margin: 12px 0 0;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: clamp(44px, 6vw, 76px);
+  font-weight: 400;
+  letter-spacing: 10px;
+  line-height: 1.05;
+  color: var(--pg-ink);
+}
+
+/* 响应式网格（不用 CSS columns：多列布局的 Tab 顺序违反 WCAG 2.4.3 聚焦顺序）。
+   缩略图固定高度 + contain 居中，任何比例的原图都不裁切。 */
+.catSection {
+  margin-top: 8px;
+  padding: 0 clamp(16px, 3vw, 48px);
+}
+
+.catSection + .catSection {
+  border-top: 1px solid var(--pg-line);
+  padding-top: 26px;
+  margin-top: 26px;
+}
+
+.catSection:last-of-type {
+  padding-bottom: 64px;
+}
+
+.catHead {
+  margin: 0 0 12px;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--pg-accent-deep);
+}
+
+.masonry {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.item {
+  margin: 0;
+  border: 1px solid var(--pg-line);
+  border-radius: 0;
+  background: var(--pg-card);
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+
+.item:hover,
+.item:focus-visible {
+  border-color: var(--pg-accent);
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: clamp(180px, 22vw, 240px);
+  object-fit: contain;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.itemTitle {
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--pg-ink);
+}
+
+.itemNote {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  color: var(--pg-sub);
+}
+
+/* 灯箱：深色遮罩 + 直角卡片，Esc/点遮罩关闭 */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60; /* 高于顶栏（z50） */
+  background: rgba(4, 10, 18, 0.78);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.zoomCard {
+  margin: 0;
+  max-width: min(1100px, 92vw);
+  border: 1px solid var(--pg-line);
+  border-radius: 0;
+  background: var(--pg-card);
+  padding: 12px;
+}
+
+.zoomImg {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}
+
+.zoomCaption {
+  margin-top: 10px;
+  text-align: center;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--pg-ink);
+}
+
+/* 关闭控件：纯文字，右上角（与 S p i k 同位） */
+.zoomClose {
+  position: fixed;
+  top: 2dvh;
+  right: 2.5dvw;
+  font-family: inherit;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: rgba(232, 247, 255, 0.8);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+
+.zoomClose:hover {
+  color: #ffffff;
+}

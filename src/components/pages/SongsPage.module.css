@@ -1,0 +1,147 @@
+/* 歌曲页：分组点播列表（默认曲 + 四张专辑）。控件纯文字，容器直角 1px 描边。 */
+
+.header {
+  padding: clamp(108px, 14vh, 150px) clamp(16px, 3vw, 48px) 10px;
+}
+
+.title {
+  margin: 12px 0 0;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: clamp(44px, 6vw, 76px);
+  font-weight: 400;
+  letter-spacing: 10px;
+  line-height: 1.05;
+  color: var(--pg-ink);
+}
+
+.groups {
+  margin: 20px 0 0;
+  padding: 0 clamp(16px, 3vw, 48px) 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 专辑筛选：纯文字 tab，当前项天依蓝加深 */
+.filterTabs {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--pg-sub);
+  text-decoration: none;
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+}
+
+.tab:hover {
+  color: var(--pg-ink);
+}
+
+.tabOn {
+  color: var(--pg-accent-deep);
+  border-bottom-color: var(--pg-accent);
+}
+
+.group {
+  border: 1px solid var(--pg-line);
+  border-radius: 0;
+  background: var(--pg-card);
+  padding: 16px 20px 18px;
+}
+
+.groupHead {
+  margin: 0 0 6px;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: clamp(17px, 1.8vw, 20px);
+  letter-spacing: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--pg-ink);
+}
+
+.groupSub {
+  margin-left: 10px;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 1px;
+  color: var(--pg-sub);
+}
+
+.groupYear {
+  margin-left: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--pg-sub);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rowItem + .rowItem {
+  border-top: 1px solid var(--pg-line);
+}
+
+.textBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 4px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.textBtn:hover {
+  background: rgba(102, 204, 255, 0.1);
+}
+
+.no {
+  flex: none;
+  width: 24px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--pg-accent);
+}
+
+.trackTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  /* 流式字号：窄窗口不再挤压换行，长曲名省略号 */
+  font-size: clamp(15px, 1.6vw, 18px);
+  letter-spacing: 2px;
+  color: var(--pg-ink);
+}
+
+.textBtnActive .trackTitle {
+  color: var(--pg-accent-deep);
+}
+
+.state {
+  flex: none;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 2px;
+  color: var(--pg-accent);
+}

@@ -1,0 +1,78 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ---------- 文字选中效果：天依蓝 #6cf 实色底（与光标点缀同色） ---------- */
+
+::selection {
+  background: #66ccff;
+  color: #0b2a45;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  /* 与站点亮色主题一致（SiteChrome --pg-bg）；开场/共鸣是 fixed 满屏舞台，不露出此底色 */
+  background: #ebf1f4;
+  color: #16283b;
+  font-family: 'Ma Shan Zheng', 'KaiTi', 'STKaiti', 'DFKai-SB', cursive;
+  -webkit-font-smoothing: antialiased;
+  /* 全站禁横向滚动（fixed 出血层/100vw 元素不再撑出横向滚动条）：
+     clip 不创建滚动容器、连程序化横滚也禁止；旧内核回退 hidden */
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+/* 移动端隐藏所有滚动条（滚动功能保留：touch/惯性滚动不受影响）。
+   必须通配 *：移动端实际滚动的是面板内部容器（歌词/目录/页面 body），
+   只隐藏 body 挡不住全站通配的 ::-webkit-scrollbar 样式 */
+@media (pointer: coarse) {
+  * {
+    scrollbar-width: none !important;
+  }
+
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+}
+
+/* ---------- 滚动条：全站统一细直条（Firefox 走 scrollbar-color） ---------- */
+
+:root {
+  scrollbar-color: #b7cfdd transparent; /* 拇指 / 轨道（可继承） */
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b7cfdd;
+  border: 3px solid transparent; /* 让可见拇指只剩 4px 细条：严格扁平 */
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8fb5c9;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

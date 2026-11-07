@@ -1,0 +1,27 @@
+/* 底部频谱条：占据旧波浪线同一位（fixed 贴底），条形随音乐律动。
+   纯几何直角条——无发光无渐变，色板与站点描边色一致。
+   高度随视口流式收缩：小屏/矮窗口不抢内容空间。 */
+
+.wave {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(20px, 3.4dvh, 34px);
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+  border-top: 1px solid var(--pg-line);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* canvas 条的绘制色：细直条与站点描边同色（直接在 JS fillRect 里用同色值）。
+   播放态给底边线一点强调（颜色加深，非发光）。 */
+.live {
+  border-top-color: var(--pg-accent);
+}

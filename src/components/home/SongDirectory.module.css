@@ -1,0 +1,208 @@
+/* 歌曲目录（首页右栏）：分组点播列表，播放中的曲目带均衡条动画。
+   高度锚定到播放器面板（grid relative + absolute），45 首曲目在面板内滚动。 */
+
+.directory {
+  position: absolute;
+  top: 0;
+  bottom: 56px;
+  right: clamp(16px, 3vw, 36px);
+  width: clamp(280px, 24vw, 330px);
+  border: 1px solid var(--pg-line);
+  border-radius: 0;
+  background: var(--pg-card);
+  padding: clamp(12px, 2dvh, 18px) 18px 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.scroll {
+  flex: 1;
+  min-height: 0; /* flex 子项可收缩，内部滚动才会生效 */
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.albumHead {
+  margin: 10px 0 2px;
+  font-family: 'Ma Shan Zheng', 'KaiTi', cursive;
+  font-size: clamp(14px, 1.9dvh, 16px);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--pg-ink);
+}
+
+.albumYear {
+  margin-left: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--pg-sub);
+}
+
+/* 专辑分组之间的分界线 */
+.scroll section {
+  border-top: 1px solid var(--pg-line);
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.scroll section:first-of-type {
+  border-top: none;
+  margin-top: 8px;
+  padding-top: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 4px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.track:hover {
+  background: rgba(102, 204, 255, 0.1);
+}
+
+.trackOn {
+  background: rgba(102, 204, 255, 0.14);
+}
+
+.no {
+  flex: none;
+  width: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  color: var(--pg-sub);
+}
+
+.trackTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(12px, 1.6dvh, 13px);
+  letter-spacing: 1px;
+  color: var(--pg-ink);
+}
+
+.trackOn .trackTitle {
+  color: var(--pg-accent-deep);
+}
+
+/* 播放中的小均衡条：纯 CSS 几何，跳动 3 根 */
+.eq {
+  flex: none;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.eq i {
+  width: 3px;
+  height: 4px;
+  background: var(--pg-accent);
+  animation: eqJump 0.9s ease-in-out infinite;
+}
+
+.eq i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.eq i:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes eqJump {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq i {
+    animation: none;
+    height: 8px;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  border-top: 1px solid var(--pg-line);
+  padding-top: 10px;
+}
+
+@media (max-width: 820px) {
+  .directory {
+    position: static; /* 小屏单列：回归文档流，限高内部滚动 */
+    width: auto;
+    max-height: 440px;
+  }
+
+  /* 竖屏放宽字号下限（dvh 在小屏上过小） */
+  .albumHead {
+    font-size: 16px;
+  }
+
+  .trackTitle {
+    font-size: 13px;
+  }
+}
+
+.more {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--pg-sub);
+  text-decoration: none;
+  border-bottom: 1px solid var(--pg-line);
+  padding: 2px 0;
+}
+
+.more:hover {
+  color: var(--pg-ink);
+  border-color: var(--pg-accent);
+}
+
+.replay {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--pg-sub);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.replay:hover {
+  color: var(--pg-ink);
+}

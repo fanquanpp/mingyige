@@ -1,0 +1,74 @@
+/*
+ * logo 组合：天依圆标（icon-tianyi.svg，缓慢闪烁）+ 手写体大字 + 波浪下划线。
+ * 内联元素，由 Nav/SiteChrome 负责定位；严格扁平：无背景无弧形容器。
+ */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  pointer-events: none;
+}
+
+.spark {
+  display: block;
+  width: 22px;
+  height: 22px;
+  animation: sparkTwinkle 3.2s ease-in-out infinite;
+}
+
+/* 圆标作为侧边栏开关时：可点击（logo 本体是 pointer-events none，需显式开启） */
+.sparkBtn {
+  display: inline-flex;
+  padding: 2px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.25s ease;
+}
+
+.sparkBtn:hover {
+  transform: scale(1.12) rotate(20deg);
+}
+
+/* 星芒呼吸式闪烁（只动 opacity/transform，无发光） */
+@keyframes sparkTwinkle {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.94) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08) rotate(20deg);
+  }
+}
+
+.text {
+  font-family: inherit;
+  font-size: clamp(26px, 2.2vw, 32px);
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: rgba(240, 250, 255, 0.92);
+  pointer-events: auto; /* 「鸣依阁」是回主页链接，需可点击 */
+  /* 品牌波浪线：与底部波浪线呼应成套 */
+  text-decoration: underline wavy;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: rgba(102, 204, 255, 0.55);
+  text-underline-offset: 12px;
+  white-space: nowrap; /* 窄屏下不被挤压成竖排 */
+}
+
+.text:hover {
+  color: rgba(240, 250, 255, 1); /* 强调态只提亮文字 */
+}
+
+/* 亮色页面：深色字 */
+.day .text {
+  color: rgba(22, 40, 59, 0.92);
+}
+
+.day .text:hover {
+  color: rgba(22, 40, 59, 1);
+}

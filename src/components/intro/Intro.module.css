@@ -1,0 +1,477 @@
+/*
+ * 开场舞台：比例锁定为终幕海报的原始比例（横屏 4096x2066 ≈ 2:1），
+ * 在非同比例屏幕上由 App 的黑色背景补边，类似游戏开场的固定宽银幕。
+ * 点击"进入主页"之前舞台大小始终不变。
+ * 如需标准 16:9，把 --stage-w/--stage-h 改成 16/9 即可。
+ */
+.intro {
+  --stage-w: 4096;
+  --stage-h: 2066;
+
+  position: relative;
+  /* 舞台锁小视口 svh：移动端地址栏收放不改变尺寸，绝对定位的各行不会中途跳动
+     （dvh 会随地址栏伸缩跳变 → 文字错位；旧浏览器回退 dvh 行） */
+  width: min(100vw, calc(100dvh * var(--stage-w) / var(--stage-h)));
+  height: min(100dvh, calc(100vw * var(--stage-h) / var(--stage-w)));
+  width: min(100vw, calc(100svh * var(--stage-w) / var(--stage-h)));
+  height: min(100svh, calc(100vw * var(--stage-h) / var(--stage-w)));
+  overflow: hidden;
+  background-color: #030e1a;
+}
+
+/* ---------- 画幅外磨砂伪装层 ---------- */
+
+/*
+ * 同一张图 cover 铺满视口 + 深度模糊压暗，作为画幅外的"色彩伪装"，
+ * 替代纯黑补边：文字阶段垫演唱会星海，终幕垫当前端的海报（图2/图3）。
+ * inset 负值做出血，避免模糊后在屏幕边缘发虚露底。
+ */
+.backdrop {
+  position: fixed;
+  inset: -60px;
+  z-index: 0;
+  background-image: url('/images/intro/concert-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(36px) brightness(0.52) saturate(1.12);
+  transform: translateZ(0); /* 隔离成独立合成层：大模糊只栅格化一次 */
+  /* fixed 出血层裁回视口：-60px 出血不再撑出文档横向宽度（横滚条根因之一） */
+  clip-path: inset(0);
+}
+
+.backdropPoster {
+  background-image: url('/images/intro/poster-landscape.png');
+}
+
+@media (orientation: portrait) {
+  .backdropPoster {
+    background-image: url('/images/intro/poster-portrait.jpg');
+  }
+}
+
+/* ---------- 背景与遮罩 ---------- */
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/intro/concert-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  will-change: transform; /* 12s 缓慢拉近全程合成器接管 */
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse at center, rgba(3, 14, 26, 0.16) 0%, rgba(3, 14, 26, 0.6) 80%),
+    linear-gradient(rgba(3, 14, 26, 0.32), rgba(3, 14, 26, 0.32));
+}
+
+/* ---------- 星光层（纯 CSS：两层不同密度的星点，闪烁 + 缓慢漂移） ---------- */
+
+/*
+ * 漂移用 transform 而不是 background-position：
+ * 后者每帧全屏重绘，前者走合成器。图层比视口多出一个平铺周期，
+ * 平移一个周期即无缝循环。
+ */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 640px);
+  height: calc(100% + 320px);
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 22%, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 34% 8%, rgba(190, 235, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(1.8px 1.8px at 58% 30%, rgba(255, 255, 255, 0.75) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 76% 12%, rgba(170, 225, 255, 0.85) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 88% 42%, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(1.1px 1.1px at 22% 56%, rgba(200, 240, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(1.7px 1.7px at 44% 72%, rgba(255, 255, 255, 0.65) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 66% 58%, rgba(190, 235, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 82% 82%, rgba(255, 255, 255, 0.6) 50%, transparent 51%),
+    radial-gradient(1.1px 1.1px at 8% 84%, rgba(200, 240, 255, 0.7) 50%, transparent 51%);
+  background-repeat: repeat;
+  background-size: 640px 640px;
+  opacity: 0.5;
+  animation:
+    twinkle 5s ease-in-out infinite,
+    drift 120s linear infinite;
+}
+
+.starsFar {
+  width: calc(100% + 980px);
+  height: calc(100% + 980px);
+  background-size: 980px 980px;
+  opacity: 0.3;
+  animation:
+    twinkle 7s ease-in-out infinite,
+    driftFar 180s linear infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(640px, 320px, 0);
+  }
+}
+
+@keyframes driftFar {
+  to {
+    transform: translate3d(980px, 980px, 0);
+  }
+}
+
+/* ---------- 上升光点（纯 CSS） ---------- */
+
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particles i {
+  position: absolute;
+  bottom: -4vh;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(142, 221, 246, 0.9);
+  box-shadow: 0 0 8px 2px rgba(102, 204, 255, 0.5);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: rise 10s linear infinite;
+}
+
+.particles i:nth-child(1)  { left: 6%;  animation-duration: 12s;  animation-delay: 0s;   scale: 0.8; }
+.particles i:nth-child(2)  { left: 16%; animation-duration: 9s;   animation-delay: 2.4s; scale: 1.2; }
+.particles i:nth-child(3)  { left: 27%; animation-duration: 13s;  animation-delay: 5s;   scale: 0.7; }
+.particles i:nth-child(4)  { left: 36%; animation-duration: 10s;  animation-delay: 1.2s; scale: 1; }
+.particles i:nth-child(5)  { left: 47%; animation-duration: 14s;  animation-delay: 6.5s; scale: 0.9; }
+.particles i:nth-child(6)  { left: 55%; animation-duration: 8.5s; animation-delay: 3.6s; scale: 1.3; }
+.particles i:nth-child(7)  { left: 64%; animation-duration: 11s;  animation-delay: 0.8s; scale: 0.75; }
+.particles i:nth-child(8)  { left: 73%; animation-duration: 12.5s;animation-delay: 4.4s; scale: 1.1; }
+.particles i:nth-child(9)  { left: 81%; animation-duration: 9.5s; animation-delay: 7.2s; scale: 0.85; }
+.particles i:nth-child(10) { left: 88%; animation-duration: 13.5s;animation-delay: 2s;   scale: 1.25; }
+.particles i:nth-child(11) { left: 94%; animation-duration: 10.5s;animation-delay: 5.8s; scale: 0.7; }
+.particles i:nth-child(12) { left: 44%; animation-duration: 15s;  animation-delay: 8.6s; scale: 1; }
+
+@keyframes rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: translateY(-108dvh);
+    opacity: 0;
+  }
+}
+
+/* ---------- 装饰层（彩带，纯 CSS） ---------- */
+
+/*
+ * 取材于演唱会现场本身：人群上空飘落与照片同款的彩带。
+ * 纯 CSS 动画，冷青色系，无发光无混色渐变。
+ */
+.decor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.decor i {
+  position: absolute;
+  display: block;
+}
+
+/* ---------- 洛天依手写签名（右下角常驻，悬浮于磨砂层与海报之上） ---------- */
+
+.signature {
+  position: fixed;
+  right: 2%;
+  bottom: 2%;
+  width: clamp(220px, 20vw, 330px);
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* 彩带：与背景照片同款的小彩屑，旋转飘落人群上空 */
+.confetti {
+  top: -6vh;
+  width: 4px;
+  height: 9px;
+  border-radius: 1px;
+  background: rgba(169, 236, 255, 0.5);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: confettiFall 11s linear infinite;
+}
+
+.confetti:nth-child(3n) {
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.confetti:nth-child(3n + 1) {
+  background: rgba(102, 204, 255, 0.5);
+}
+
+.confetti:nth-child(1)  { left: 6%;  animation-delay: 1s;   animation-duration: 12s; }
+.confetti:nth-child(2)  { left: 14%; animation-delay: 6s;   animation-duration: 14s; }
+.confetti:nth-child(3)  { left: 23%; animation-delay: 3s;   animation-duration: 10s; }
+.confetti:nth-child(4)  { left: 31%; animation-delay: 9s;   animation-duration: 15s; }
+.confetti:nth-child(5)  { left: 40%; animation-delay: 0s;   animation-duration: 11s; }
+.confetti:nth-child(6)  { left: 48%; animation-delay: 7s;   animation-duration: 13s; }
+.confetti:nth-child(7)  { left: 57%; animation-delay: 4s;   animation-duration: 12s; }
+.confetti:nth-child(8)  { left: 65%; animation-delay: 10s;  animation-duration: 14s; }
+.confetti:nth-child(9)  { left: 73%; animation-delay: 2s;   animation-duration: 10s; }
+.confetti:nth-child(10) { left: 81%; animation-delay: 8s;   animation-duration: 15s; }
+.confetti:nth-child(11) { left: 89%; animation-delay: 5s;   animation-duration: 12s; }
+.confetti:nth-child(12) { left: 95%; animation-delay: 11s;  animation-duration: 13s; }
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate3d(1, 1, 0, 0deg);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(112dvh) rotate3d(1, 1, 1, 540deg);
+    opacity: 0;
+  }
+}
+
+/* 竖屏：收敛装饰密度 */
+@media (orientation: portrait) {
+  .confetti:nth-child(2n) {
+    display: none;
+  }
+}
+
+/* ---------- 文字区 ---------- */
+
+.textContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/*
+ * 每行文字通过 CSS 变量声明自己的位置/字号（--t/--l/--r/--b/--s），
+ * 便于错落排版；移动端媒体查询只需重置变量即可切换为流式分栏。
+ */
+.line {
+  position: absolute;
+  top: var(--t, auto);
+  left: var(--l, auto);
+  right: var(--r, auto);
+  bottom: var(--b, auto);
+  margin: 0;
+  font-size: var(--s, clamp(22px, 2.6vw, 38px));
+  color: #a9ecff;
+  letter-spacing: 3px;
+  white-space: nowrap;
+  text-shadow:
+    0 0 8px rgba(142, 221, 246, 0.9),
+    0 0 22px rgba(102, 204, 255, 0.55),
+    0 0 48px rgba(64, 156, 255, 0.3);
+}
+
+/*
+ * 呼吸式发光：把强光晕画在 ::before（同文案）上，只动 opacity——
+ * text-shadow 逐帧动画会持续重绘，opacity 走合成器。
+ */
+.line::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: inherit;
+  letter-spacing: inherit;
+  text-shadow:
+    0 0 10px rgba(170, 235, 255, 1),
+    0 0 30px rgba(120, 215, 255, 0.7),
+    0 0 64px rgba(80, 170, 255, 0.42);
+  opacity: 0.5;
+  animation: glowPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/*
+ * 桌面端错落排版（参照素材图2 的分布）。
+ * --pl/--pr 仅在竖屏媒体查询中作为 padding 生效，
+ * 用来复刻图3 中各行左右错落的横向位置（数值 ≈ 偏移量×2）。
+ */
+
+.line1 { --t: 12%; --l: 8%;  --s: clamp(30px, 4vw, 50px);  --pr: 28%; }
+.line2 { --t: 21.5%; --l: 19%; --s: clamp(26px, 3.4vw, 44px); --pl: 10%; }
+.line3 { --t: 40%; --l: 4%;  --pr: 38%; }
+.line4 { --t: 49%; --l: 12%; --s: clamp(24px, 3vw, 40px);  --pl: 14%; }
+.line5 { --t: 71%; --l: 13%; --s: clamp(27px, 3.5vw, 45px); --pr: 6%; }
+.line6 { --t: 84%; --l: 3%;  --s: clamp(19px, 2.3vw, 31px); --pr: 8%; }
+.line7 { --t: 14%; --r: 6%;  --s: clamp(27px, 3.6vw, 46px); --pl: 4%; }
+.line8 { --t: 35%; --r: 9%;  --s: clamp(27px, 3.6vw, 46px); }
+.line9 { --t: 45%; --r: 3%;  --s: clamp(20px, 2.5vw, 34px); --pl: 6%; }
+
+/* 收尾句：右下角高潮（与素材图2 一致，避开左下角长句） */
+.line10 {
+  --t: 76%;
+  --r: 3%;
+  --s: clamp(30px, 4.4vw, 58px);
+  color: #ffffff;
+}
+
+.line10::before {
+  text-shadow:
+    0 0 12px rgba(142, 221, 246, 1),
+    0 0 32px rgba(102, 204, 255, 0.8),
+    0 0 70px rgba(46, 156, 203, 0.55);
+}
+
+/* ---------- 终幕海报 ---------- */
+
+/* 横屏（桌面）：图2；竖屏（移动端）在下方媒体查询换成图3。
+   注意：基础规则必须位于媒体查询之前，否则同优先级会被覆盖 */
+.poster {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image: url('/images/intro/poster-landscape.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* --- 竖屏：舞台换成图3 的比例，文字按图3 逐句定位 --- */
+
+@media (orientation: portrait) {
+  .intro {
+    --stage-w: 2264;
+    --stage-h: 4096;
+  }
+
+  .textContainer {
+    padding: 0;
+  }
+
+  /*
+   * 竖屏：舞台比例与素材图3 一致，直接按图3 的纵向百分比逐句定位
+   * （文字块整体偏上，收尾句落在约 76% 高度，下方留出人物区）。
+   * 横向仍用 --pl/--pr 的 padding 偏移复刻左右错落，部分行保持居中。
+   */
+  .line {
+    --l: 0;
+    --r: 0;
+    --s: clamp(17px, 5.4vw, 26px);
+    position: absolute;
+    width: auto;
+    white-space: normal;
+    text-align: center;
+    letter-spacing: 1px;
+    padding-left: var(--pl, 0%);
+    padding-right: var(--pr, 0%);
+    /* 移动 GPU 防重影：单层字形 + 静态阴影。
+       ::before 的 attr(data-text) 拷贝层与 text-shadow 辉光在
+       filter/transform 动画逐帧重栅格化时会错位叠出第二份字 */
+    text-shadow: 0 0 10px rgba(142, 221, 246, 0.75);
+  }
+
+  .line::before {
+    display: none;
+  }
+
+  /* 纵向位置对照图3；字号分级：短句更大，部分行保持居中 */
+  .line1  { --t: 4%;    --s: clamp(20px, 7vw, 34px);   --pr: 34%; }
+  .line2  { --t: 9%;    --s: clamp(19px, 6vw, 30px);   --pl: 12%; }
+  .line3  { --t: 16%;   --s: clamp(19px, 6.4vw, 32px); --pr: 42%; }
+  .line4  { --t: 21.5%; --s: clamp(18px, 6vw, 30px);   --pl: 15%; }
+  .line5  { --t: 30.5%; --s: clamp(19px, 6.4vw, 31px); --pr: 8%; }
+  .line6  { --t: 37%;   --s: clamp(17px, 5.2vw, 25px); --pl: 0; --pr: 0; }
+  .line7  { --t: 46%;   --s: clamp(19px, 6.2vw, 30px); --pl: 0; --pr: 0; }
+  .line8  { --t: 55.5%; --s: clamp(19px, 6.2vw, 30px); --pl: 0; --pr: 0; }
+  .line9  { --t: 61.5%; --s: clamp(17px, 5.4vw, 26px); --pl: 0; --pr: 0; }
+  .line10 { --t: 76%;   --s: clamp(22px, 7vw, 36px);   --pl: 0; --pr: 0; }
+
+  .poster {
+    background-image: url('/images/intro/poster-portrait.jpg');
+  }
+}
+
+/* ---------- 共鸣提示与全屏点击 ---------- */
+
+/* 动画播放完毕后才给手势反馈，播放中点击不生效 */
+.ready {
+  cursor: pointer;
+}
+
+/* 共鸣提示：悬浮在画幅下方的磨砂补边上（fixed 贴视口底部，脱离舞台裁切） */
+.tapHint {
+  position: fixed;
+  bottom: 2dvh;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(22px, 2.6vw, 34px);
+  letter-spacing: 8px;
+  color: #a9ecff;
+  cursor: pointer;
+}
+
+/* 外层负责入场淡入（Motion），内层负责呼吸（CSS），各管一个属性不打架 */
+.tapHintBreath {
+  display: inline-block;
+  animation: hintBreath 2.8s ease-in-out infinite;
+}
+
+@keyframes hintBreath {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

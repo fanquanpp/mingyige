@@ -1,0 +1,48 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2dvh 2.5dvw;
+  pointer-events: none;
+}
+
+/* 功能位：只有这里可交互，避免导航条挡住全屏点击判定 */
+/* 主功能菜单：文字扁平，当前项提亮 */
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  pointer-events: auto;
+}
+
+.menuLink {
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 3px;
+  color: rgba(232, 247, 255, 0.55);
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.menuLink:hover {
+  color: rgba(240, 250, 255, 0.95);
+}
+
+.menuOn {
+  color: rgba(240, 250, 255, 0.95);
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  pointer-events: auto;
+}

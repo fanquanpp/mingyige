@@ -1,0 +1,175 @@
+/* StaggeredMenu：右侧滑入面板（深夜蓝配色，面板内含签名与社交链接）。
+   结构与动效源自 ReactBits StaggeredMenu（MIT），配色自定义。 */
+
+.staggered-menu-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.staggered-menu-wrapper.fixed-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* 不用 100vw：纵向滚动条存在时 100vw 会撑出横向滚动条 */
+  height: 100dvh;
+  z-index: 40;
+  overflow: hidden;
+}
+
+.staggered-menu-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: clamp(300px, 34vw, 430px);
+  height: 100%;
+  background: #0a1b2e;
+  display: flex;
+  flex-direction: column;
+  padding: 6.5em 2.2em 2.2em 2.2em;
+  overflow-y: auto;
+  /* 滚动链阻断：面板滚到顶/底不再带动底层页面滚（MDN dialog 用例） */
+  overscroll-behavior: contain;
+  z-index: 10;
+  pointer-events: auto;
+  opacity: 0;
+}
+
+[data-position='left'] .staggered-menu-panel {
+  right: auto;
+  left: 0;
+}
+
+/* 亮色主题：白面板 + 深色文字 */
+.staggered-menu-wrapper[data-theme='light'] .staggered-menu-panel {
+  background: #ffffff;
+}
+
+.staggered-menu-wrapper[data-theme='light'] .sm-panel-item {
+  color: #16283b;
+}
+
+.staggered-menu-wrapper[data-theme='light'] .sm-panel-item:hover {
+  color: var(--sm-accent, #2e9ccb);
+}
+
+.staggered-menu-wrapper[data-theme='light'] .sm-socials-link {
+  color: #16283b;
+}
+
+.staggered-menu-wrapper[data-theme='light'] .sm-socials-link:hover {
+  color: var(--sm-accent, #2e9ccb);
+}
+
+.sm-prelayers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(300px, 34vw, 430px);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+}
+
+[data-position='left'] .sm-prelayers {
+  right: auto;
+  left: 0;
+}
+
+.sm-prelayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  transform: translateX(0);
+  opacity: 0;
+}
+
+.sm-panel-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 面板内签名：底部左下角常驻装饰 */
+.sm-panel-sign {
+  display: block;
+  width: 72%;
+  margin: auto 0 1.2rem;
+  align-self: flex-start;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.sm-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sm-panel-item {
+  position: relative;
+  color: #e8f7ff;
+  font-weight: 600;
+  font-size: clamp(1.9rem, 2.6vw, 2.7rem);
+  cursor: pointer;
+  line-height: 1.15;
+  letter-spacing: 2px;
+  text-decoration: none;
+  display: inline-block;
+  padding-right: 1.4em;
+  transition: color 0.25s ease;
+}
+
+.sm-panel-item:hover {
+  color: var(--sm-accent, #66ccff);
+}
+
+.sm-panel-list[data-numbering] {
+  counter-reset: smItem;
+}
+
+.sm-panel-list[data-numbering] .sm-panel-item::after {
+  counter-increment: smItem;
+  content: counter(smItem, decimal-leading-zero);
+  position: absolute;
+  top: 0.15em;
+  right: 2.6em;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--sm-accent, #66ccff);
+  letter-spacing: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--sm-num-opacity, 0);
+}
+
+.sm-panel-itemLabel {
+  display: inline-block;
+  will-change: transform;
+  transform-origin: 50% 100%;
+}
+
+@media (max-width: 1024px) {
+  .staggered-menu-panel,
+  .sm-prelayers {
+    width: 100%;
+  }
+
+  .staggered-menu-panel {
+    left: 0;
+    right: 0;
+  }
+
+  .sm-prelayers {
+    left: 0;
+    right: 0;
+  }
+}
