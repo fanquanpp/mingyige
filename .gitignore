@@ -3,6 +3,4 @@ dist
 *.local
 .DS_Store
 .mimosa/
-
-# 音源（约 500MB，超过 GitHub 仓库体感上限；部署走 Cloudflare Pages 直传 dist）
-public/audio/
+scripts/_apply-recompress.mjs
