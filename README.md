@@ -82,7 +82,7 @@ npm run preview   # 预览构建产物
 
 ## 部署（Cloudflare Pages · 主站）
 
-- **主站地址：https://mingyige.pages.dev**（分享给朋友直接发这个链接）
+- 主站地址：**[https://mingyige.pages.dev](https://mingyige.pages.dev)** —— 分享给朋友直接发这个链接
 - 免费计划：带宽不限、单文件 ≤25MB、每月 500 次构建；纯静态无后端，免费计划不绑付款方式、被刷也不会产生账单
 - 音源策略：18 首 flac 无损已转 320k mp3（体积 2.3GB→526MB），flac 原文件不入产物；部署用 `npx wrangler pages deploy dist --project-name mingyige`（登录一次 Cloudflare 账号后可重复执行）
 - 安全防护：`public/_headers`（nosniff / DENY / Referrer-Policy / 静态资源长缓存）、`public/robots.txt`（禁止索引音源目录）
