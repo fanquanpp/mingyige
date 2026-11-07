@@ -12,6 +12,20 @@
   animation: resFadeIn 0.3s ease-out both;
 }
 
+/* frozen（stale 延迟卸载期）：纯黑终态——所有动画禁用、光效层隐藏（WebGL 不重放）。
+   卸载期间的视觉必须与现役实例的「灯灭后」状态完全一致，不能有任何重放 */
+.frozen {
+  animation: none;
+}
+
+.frozen .raysWrap,
+.frozen .lines p,
+.frozen .resLogo,
+.frozen .confetti i {
+  animation: none !important;
+  opacity: 0 !important;
+}
+
 @keyframes resFadeIn {
   from {
     opacity: 0;

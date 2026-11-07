@@ -133,7 +133,7 @@ export default function App() {
       )}
       {staleView === 'resonance' && (
         <div className={styles.stageHidden}>
-          <Resonance key={`stale-${runId}`} onDone={() => {}} />
+          <Resonance key={`stale-${runId}`} onDone={() => {}} frozen />
         </div>
       )}
       {/* 现役舞台：共鸣页黑幕合拢期间开场画面挂载其下（渐暗过渡）；leaving 期间冻结 onEnter。

@@ -11,15 +11,18 @@ import styles from './Resonance.module.css';
  *
  * 时间线：0.3s 黑幕+灯亮 → 0.65s 共鸣者 → 1.1s 欢迎来到 → 1.55s 鸣依阁 → 2.25s 灯光熄灭（保持纯黑） → 2.6s 交还。
  * 全程不响应点击（动画未完不进入主页，与开场动画规则一致）。
+ * frozen=true（stale 延迟卸载期）：跳过开场时间线、直接纯黑终态——
+ * stale 重挂会让 resFadeIn/lightOn 从头重放（黑幕闪烁+光斑残影），且 WebGL 不重复初始化。
  */
-export default function Resonance({ onDone }: { onDone: () => void }) {
+export default function Resonance({ onDone, frozen = false }: { onDone: () => void; frozen?: boolean }) {
   useEffect(() => {
+    if (frozen) return undefined; // stale 实例不跑时间线、不触发 onDone
     const t = window.setTimeout(onDone, 2600);
     return () => window.clearTimeout(t);
-  }, [onDone]);
+  }, [onDone, frozen]);
 
   return (
-    <div className={styles.resonance} aria-hidden="true">
+    <div className={`${styles.resonance} ${frozen ? styles.frozen : ''}`} aria-hidden="true">
       {/* reactbits LightRays 聚光灯：正中上方垂直打下 */}
       <div className={styles.raysWrap}>
         <LightRays
