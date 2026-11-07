@@ -80,11 +80,18 @@ npm run preview   # 预览构建产物
 
 见 [docs/design-rules.md](docs/design-rules.md)——硬性禁令清单，任何 UI 先过这道检查。
 
-## 部署（GitHub Pages）
+## 部署（Cloudflare Pages · 主站）
 
-- 仓库：[fanquanpp/mingyige](https://github.com/fanquanpp/mingyige)，Pages 由 `.github/workflows/deploy-pages.yml` 自动构建部署（push main 触发）
-- 访问地址：https://fanquanpp.github.io/mingyige/
-- **大素材不在仓库**：`public/audio/`（2GB 音源）与 `public/video/` 超出 GitHub 限制已 gitignore。部署后线上音乐/视频会 404；补素材方式任选：
-  1. 用 [Git LFS](https://git-lfs.com) 追踪后强推（`git lfs install && git lfs track "public/audio/**"`，LFS 免费额度 1GB）
-  2. 或把音频传到外部对象存储后改 `src/data/site-content.ts` 的 src 为外链
+- **主站地址：https://mingyige.pages.dev**（免费计划：带宽不限、单文件 ≤25MB、每月 500 次构建）
+- 音源策略：18 首 flac 无损已转 320k mp3（体积 2.3GB→526MB），flac 原文件不入产物；部署用 `npx wrangler pages deploy dist --project-name mingyige`（登录一次 Cloudflare 账号后可重复执行）
+- 安全防护：`public/_headers`（nosniff / DENY / Referrer-Policy / 静态资源长缓存）、`public/robots.txt`（禁止索引音源目录）
+- **国内访问说明**：`*.pages.dev` 未备案，Cloudflare 免费网络无大陆节点，国内访问走海外 PoP（实测音乐全量较慢、HTML 正常）。要国内流畅：
+  1. 自有域名（需 ICP 备案）接入 Cloudflare 并绑定到 Pages 项目 → 走大陆可达性更好的调度（免费，备案是前提）
+  2. 或不备案，用「优选 IP」方案：自建 CNAME 指向测速优选的 Cloudflare Anycast IP（免费但稳定性一般）
+  3. 或换国内友好托管（如腾讯 EdgeOne Pages / 阿里 OSS+CDN，个人免费额度需自行核对）
+
+## 镜像部署（GitHub Pages）
+
+- 仓库：[fanquanpp/mingyige](https://github.com/fanquanpp/mingyige)，`.github/workflows/deploy-pages.yml` 自动构建（push main 触发）
+- 地址：https://fanquanpp.github.io/mingyige/ —— 音源不在仓库（超 GitHub 限制），此镜像**音乐不可用**，仅作代码备份与结构预览
 - 构建产物 base 为相对路径（`base: './'`），dev/preview 不受影响
