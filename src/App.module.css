@@ -6,9 +6,8 @@
   display: grid;
   place-items: center;
   background: #000;
-  /* 舞台期（intro/resonance 或 stale 卸载期）锁死高度铺满：
-     grid place-items 会把非满屏子项压缩居中——stale 舞台叠在页面上时
-     必须保证它是全屏底版而不是半屏卡片 */
+  /* stale 卸载期锁死高度铺满：grid place-items 会把非满屏子项压缩居中——
+     stale 舞台叠在页面上时必须保证它是全屏底版而不是半屏卡片 */
 }
 
 /* 舞台退场中间态：容器淡出（leaving 阶段——浏览器绘制此帧后，下一帧才切视图）。

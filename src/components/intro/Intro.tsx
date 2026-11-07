@@ -14,9 +14,8 @@ const EASE_IN_OUT: [number, number, number, number] = [0.45, 0, 0.25, 1];
  */
 
 /**
- * 入场动画：自然播放完 → 全屏点击 → 共鸣过渡页 → 主页。
- * （S p i k 跳过按钮由 App 层常驻提供，覆盖开场/海报/共鸣三个阶段。）
- * frozen=true（已进入共鸣页）：所有动画立即暂停定格——被黑幕遮住后继续跑的
+ * 入场动画：自然播放完 → 「轻触共鸣」浮现 → 点击直达主页（S p i k 同款退场逻辑）。
+ * frozen=true（stale 延迟卸载期）：动画立即转终态定格——被隐藏壳遮住后继续跑的
  * blur/transform 动画在安卓 WebView 上会冻结在中间帧并产生重绘残影。
  */
 export default function Intro({ onEnter, frozen = false }: { onEnter: () => void; frozen?: boolean }) {
@@ -47,8 +46,8 @@ export default function Intro({ onEnter, frozen = false }: { onEnter: () => void
   }, []);
 
   // ready 后在 window 层监听：舞台内外的任意位置（含磨砂补边）点击都生效。
-  // 例外：点在 S p i k 按钮上不触发 onEnter——skip 会先于 click 在 pointerdown 命中
-  // 这里，两个视图目标同帧竞争（resonance vs home）导致舞台/WebGL 拆建闪烁崩坏
+  // 例外：点在 S p i k 按钮上不触发 onEnter——两个入口共用同一退场逻辑，
+  // pointerdown 先于 click，若不排除会双触发重入
   useEffect(() => {
     if (!ready) return;
     const onTap = (event: PointerEvent) => {
