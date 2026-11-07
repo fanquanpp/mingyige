@@ -54,34 +54,42 @@ export default function App() {
 
   const onStage = view === 'intro' || view === 'resonance';
 
-  /* 视图切换统一退场序：直接 setView 会在同一帧卸载带 fixed 合成层的 Intro/Resonance
+  /* 视图切换退场序：直接 setView 会在同一帧卸载带 fixed 合成层的 Intro/Resonance
      + 挂载新页，合成层销毁与新页首帧布局竞态 → 旧舞台快照叠印在新页面上（崩坏画面）。
-     三步序：淡出（浏览器必须实际绘制这一帧）→ 等下一帧再切视图 → 切页后恢复不透明。
-     关键：淡出与切页不能在同一个 setTimeout 里被 React 批处理成一帧。
-     所有离开舞台的路径（Spik / 轻触共鸣 / 共鸣完成）都必须走这里。 */
-  const [fading, setFading] = useState(false);
+     双保险方案：
+     ① leaving 状态——旧舞台先转「正在退场」（CSS 降 opacity 但不卸载），一帧后切视图；
+     ② setView 切页后旧舞台再保持挂载 unmountDelay 毫秒（新页已完整绘制），届时才真正卸载。
+     这样合成层销毁发生在新页已稳定绘制的帧里，竞态窗口不存在。 */
+  const [leaving, setLeaving] = useState(false);
+  const [staleView, setStaleView] = useState<View | null>(null); // 已切走但仍挂载的旧舞台
+  const unmountTimer = useRef<number>(0);
+
   const transitionTo = (next: View) => {
-    if (fading) return;
-    if (view === next) return;
-    // 已在目标页以下两层（intro→resonance 是同舞台换景，不涉及卸载，直接切）
+    if (leaving || view === next) return;
+    // intro→resonance 同舞台换景（Intro 保持挂载在其下），不涉及卸载，直接切
     if (view === 'intro' && next === 'resonance') {
       setView(next);
       return;
     }
-    setFading(true);
-    // 220ms：.stageFading 的 opacity 过渡完成并被浏览器绘制
+    setLeaving(true);
     window.setTimeout(() => {
-      // 再等一个 rAF，确保淡出帧已上屏（与 setView 分离，避免批处理合并）
       requestAnimationFrame(() => {
+        setStaleView(view); // 旧舞台记入待卸载清单
         setView(next);
-        // 切页提交后再移除 fading，新页面从 opacity 0 正常淡入
-        requestAnimationFrame(() => setFading(false));
+        setLeaving(false);
+        // 新页渲染稳定后再真正卸载旧舞台（合成层此时销毁无害）
+        window.clearTimeout(unmountTimer.current);
+        unmountTimer.current = window.setTimeout(() => setStaleView(null), 600);
       });
     }, 220);
   };
 
+  // 卸载期间若再次切换，清掉旧计时器
+  useEffect(() => () => window.clearTimeout(unmountTimer.current), []);
+  const leavingStage = leaving || staleView !== null;
+
   return (
-    <div className={`${styles.app} ${fading ? styles.stageFading : ''}`}>
+    <div className={`${styles.app} ${leavingStage ? styles.stageFading : ''}`}>
       {/* 自定义光标：四角括号锁定所有可点击目标（触屏设备自动禁用）。
           颜色固定品牌点缀 #66ccff（含入场/共鸣深色舞台——夜幕底上对比度足够）；
           尺寸/描边加大保证深浅背景上都显眼；
@@ -112,17 +120,19 @@ export default function App() {
       >
         S p i k
       </motion.button>
-      {/* 共鸣页黑幕缓缓合拢期间，开场画面保持挂载在其下方（渐暗过渡）。
-          fading 期间冻结 onEnter：任何点击都不得在淡出途中再触发视图竞争 */}
+      {/* 退场中的旧舞台：切页后继续挂载 600ms（新页已完整绘制），合成层届时才销毁。
+          视觉上处于 opacity:0（.stageFading），且 pointer-events 关闭不挡新页交互 */}
+      {staleView === 'intro' && <Intro key={`stale-${runId}`} onEnter={() => {}} />}
+      {staleView === 'resonance' && <Resonance key={`stale-${runId}`} onDone={() => {}} />}
+      {/* 现役舞台：共鸣页黑幕合拢期间开场画面挂载其下（渐暗过渡）；leaving 期间冻结 onEnter */}
       {(view === 'intro' || view === 'resonance') && (
-        <Intro key={runId} onEnter={fading ? () => {} : () => transitionTo('resonance')} />
+        <Intro key={runId} onEnter={leaving ? () => {} : () => transitionTo('resonance')} />
       )}
-      {/* 共鸣完成：淡出后落页并卸载 Resonance（WebGL/定时器一并清理）——同样走统一退场序 */}
       {view === 'resonance' && <Resonance key={runId} onDone={() => transitionTo(entry ?? 'home')} />}
       {view === 'home' && (
         <Home
           onReplay={() => {
-            // 重看开场：页面 → 舞台同样要过退场序（页面虽有 fixed 元素较少，统一走保平安）
+            // 重看开场：页面 → 舞台同样走退场序
             setRunId(id => id + 1);
             transitionTo('intro');
           }}
