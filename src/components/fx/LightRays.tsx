@@ -40,6 +40,8 @@ export interface LightRaysProps {
   lightMode?: boolean;
   opacity?: number;
   maxDevicePixelRatio?: number;
+  /** true：完全停机——不建 GL、不起 rAF（父层已视觉隐藏时用，省一个合成层与 GPU 占用） */
+  paused?: boolean;
   className?: string;
   style?: CSSProperties;
 }
@@ -328,6 +330,7 @@ const LightRays = ({
   lightMode = false,
   opacity = 1,
   maxDevicePixelRatio = 2,
+  paused = false,
   className = '',
   style
 }: LightRaysProps) => {
@@ -374,6 +377,7 @@ const LightRays = ({
     const container = containerRef.current;
     const canvas = canvasRef.current;
     if (!container || !canvas) return;
+    if (paused) return undefined; // 完全停机：不建 GL、不起循环（父层视觉隐藏时省一个合成层）
 
     const gl = canvas.getContext('webgl2', {
       alpha: true,
@@ -626,7 +630,7 @@ const LightRays = ({
         gl.deleteProgram(shader.program);
       }
     };
-  }, [generation]);
+  }, [generation, paused]);
 
   return (
     <div ref={containerRef} className={`light-rays${className ? ` ${className}` : ''}`} style={style}>

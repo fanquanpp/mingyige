@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LightRays from './LightRays';
 import BrandLogo from '../brand/BrandLogo';
 import styles from './Resonance.module.css';
@@ -15,40 +15,54 @@ import styles from './Resonance.module.css';
  * stale 重挂会让 resFadeIn/lightOn 从头重放（黑幕闪烁+光斑残影），且 WebGL 不重复初始化。
  */
 export default function Resonance({ onDone, frozen = false }: { onDone: () => void; frozen?: boolean }) {
+  const [raysPaused, setRaysPaused] = useState(false);
+
   useEffect(() => {
     if (frozen) return undefined; // stale 实例不跑时间线、不触发 onDone
+    // 灯灭（fadeOut 2.25s+0.3s 结束）即停聚光灯 rAF——
+    // 视觉已纯黑，WebGL 合成层继续空转到卸载是切页残影的来源
+    const stop = window.setTimeout(() => setRaysPaused(true), 2550);
     const t = window.setTimeout(onDone, 2600);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(stop);
+      window.clearTimeout(t);
+    };
   }, [onDone, frozen]);
 
   return (
     <div className={`${styles.resonance} ${frozen ? styles.frozen : ''}`} aria-hidden="true">
-      {/* reactbits LightRays 聚光灯：正中上方垂直打下 */}
-      <div className={styles.raysWrap}>
-        <LightRays
-          raysOrigin="top-center"
-          raysColor="#4FB3E8"
-          raysSpeed={1}
-          lightSpread={0.7}
-          rayLength={3}
-          glow={0.4}
-          haze={0.5}
-          rayDensity={1.8}
-          tilt={0}
-          raySharpness={0.75}
-          atmosphere={1}
-          intensity={0.9}
-          fadeDistance={1}
-          saturation={1}
-          noiseAmount={0}
-          distortion={0}
-          pulsating={false}
-          followMouse={false}
-          cursorShadow={false}
-          clickPulse={false}
-          opacity={0.7}
-        />
-      </div>
+      {/* reactbits LightRays 聚光灯：正中上方垂直打下。
+          frozen（stale 卸载期）不渲染——纯黑即设计终态；此时挂 GL 反而制造
+          「新建上下文→600ms 后销毁」的合成层撕裂，且 rAF 空转到卸载为止。
+          raysPaused（灯灭后）彻底停机：不再有活跃 GL 合成层跨过切页瞬间 */}
+      {!frozen && (
+        <div className={styles.raysWrap}>
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#4FB3E8"
+            raysSpeed={1}
+            lightSpread={0.7}
+            rayLength={3}
+            glow={0.4}
+            haze={0.5}
+            rayDensity={1.8}
+            tilt={0}
+            raySharpness={0.75}
+            atmosphere={1}
+            intensity={0.9}
+            fadeDistance={1}
+            saturation={1}
+            noiseAmount={0}
+            distortion={0}
+            pulsating={false}
+            followMouse={false}
+            cursorShadow={false}
+            clickPulse={false}
+            opacity={0.7}
+            paused={raysPaused}
+          />
+        </div>
+      )}
 
       {/* 背景彩带：与开场同款 */}
       <div className={styles.confetti} aria-hidden="true">
