@@ -4,9 +4,9 @@ import type { StaggeredMenuItem } from './components/nav/StaggeredMenu';
 /** 页面清单与导航锚点；页面切换统一走 hash，App 监听 hashchange 切页。
  *  专辑筛选视图：#songs/<albumKey>（见 albumFromHash）。 */
 
-export type PageView = 'home' | 'songs' | 'gallery';
+export type PageView = 'home' | 'songs' | 'gallery' | 'disclaimer';
 
-export const PAGE_VIEWS: PageView[] = ['home', 'songs', 'gallery'];
+export const PAGE_VIEWS: PageView[] = ['home', 'songs', 'gallery', 'disclaimer'];
 
 export const ALBUM_KEYS = ['yiruchujian', 'wujinlan', 'zaisheng', 'sichongzou', 'lostintianyi'];
 
@@ -28,7 +28,7 @@ export const PAGE_NAV: PillNavItem[] = [
   { label: '图集', href: '#gallery', ariaLabel: '去图集页' }
 ];
 
-/* 侧边栏目录：全部 / 五张专辑（直达对应筛选视图）/ 图集 */
+/* 侧边栏目录：全部 / 五张专辑（直达对应筛选视图）/ 图集 / 免责声明 */
 export const MENU_ITEMS: StaggeredMenuItem[] = [
   { label: '全部', ariaLabel: '回到首页', link: '#home' },
   { label: '依如初见', ariaLabel: '播放依如初见', link: '#songs/yiruchujian' },
@@ -36,5 +36,6 @@ export const MENU_ITEMS: StaggeredMenuItem[] = [
   { label: '再生', ariaLabel: '播放再生', link: '#songs/zaisheng' },
   { label: '四重奏', ariaLabel: '播放四重奏', link: '#songs/sichongzou' },
   { label: 'Lost In Tianyi', ariaLabel: '播放 Lost In Tianyi', link: '#songs/lostintianyi' },
-  { label: '图集', ariaLabel: '查看图集', link: '#gallery' }
+  { label: '图集', ariaLabel: '查看图集', link: '#gallery' },
+  { label: '免责声明', ariaLabel: '查看免责声明', link: '#disclaimer' }
 ];

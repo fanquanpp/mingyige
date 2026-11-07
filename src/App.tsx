@@ -4,6 +4,7 @@ import Intro from './components/intro/Intro';
 import Home from './components/home/Home';
 import SongsPage from './components/pages/SongsPage';
 import GalleryPage from './components/pages/GalleryPage';
+import DisclaimerPage from './components/pages/DisclaimerPage';
 import Resonance from './components/fx/Resonance';
 import TargetCursor from './components/fx/TargetCursor';
 import { armMusicOnGesture } from './audio/music';
@@ -116,6 +117,7 @@ export default function App() {
       )}
       {view === 'songs' && <SongsPage />}
       {view === 'gallery' && <GalleryPage />}
+      {view === 'disclaimer' && <DisclaimerPage />}
     </div>
   );
 }

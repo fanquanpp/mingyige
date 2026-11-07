@@ -11,9 +11,8 @@ export default defineConfig({
   base: './',
   server: {
     watch: {
-      // .mimosa 是工具的内部状态目录，文件被锁会导致 watcher 崩溃；
-      // public/audio 下 1.9GB 音源变化也会压垮 watcher（静态资源无需热更）
-      ignored: ['**/.mimosa/**', '**/public/audio/**', '**/public/lyrics/**', '**/public/video/**'],
+      // 音源仍较大（~500MB），watcher 排除避免文件锁/全量扫描开销；静态资源无需热更
+      ignored: ['**/public/audio/**', '**/public/lyrics/**'],
     },
   },
 })

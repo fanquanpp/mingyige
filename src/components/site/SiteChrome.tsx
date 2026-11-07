@@ -10,7 +10,8 @@ import styles from './SiteChrome.module.css';
 const PAGE_TITLES: Record<PageView, string> = {
   home: '鸣依阁',
   songs: '歌曲 · 鸣依阁',
-  gallery: '图集 · 鸣依阁'
+  gallery: '图集 · 鸣依阁',
+  disclaimer: '免责声明 · 鸣依阁'
 };
 
 /**

@@ -36,14 +36,14 @@ export const ALBUMS: AlbumSection[] = [
     subtitle: '十周年纪念专辑',
     cover: 'images/albums/yiruchujian.jpg',
     tracks: [
-      { id: 'yiruchujian-01', title: '心印', src: 'audio/albums/yiruchujian/yiruchujian-01.flac', lyric: 'lyrics/yiruchujian-01.json' },
-      { id: 'yiruchujian-02', title: '66CCFF', src: 'audio/albums/yiruchujian/yiruchujian-02.flac', lyric: 'lyrics/yiruchujian-02.json' },
-      { id: 'yiruchujian-03', title: '万分之一的光', src: 'audio/albums/yiruchujian/yiruchujian-03.flac', lyric: 'lyrics/yiruchujian-03.json' },
+      { id: 'yiruchujian-01', title: '心印', src: 'audio/albums/yiruchujian/yiruchujian-01.mp3', lyric: 'lyrics/yiruchujian-01.json' },
+      { id: 'yiruchujian-02', title: '66CCFF', src: 'audio/albums/yiruchujian/yiruchujian-02.mp3', lyric: 'lyrics/yiruchujian-02.json' },
+      { id: 'yiruchujian-03', title: '万分之一的光', src: 'audio/albums/yiruchujian/yiruchujian-03.mp3', lyric: 'lyrics/yiruchujian-03.json' },
       { id: 'yiruchujian-04', title: '纯蓝', src: 'audio/albums/yiruchujian/yiruchujian-04.mp3', lyric: 'lyrics/yiruchujian-04.json' },
       { id: 'yiruchujian-05', title: '一半一半', src: 'audio/albums/yiruchujian/yiruchujian-05.mp3', lyric: 'lyrics/yiruchujian-05.json' },
-      { id: 'yiruchujian-06', title: 'I LOVE U', src: 'audio/albums/yiruchujian/yiruchujian-06.flac', lyric: 'lyrics/yiruchujian-06.json' },
+      { id: 'yiruchujian-06', title: 'I LOVE U', src: 'audio/albums/yiruchujian/yiruchujian-06.mp3', lyric: 'lyrics/yiruchujian-06.json' },
       { id: 'yiruchujian-07', title: '夏虫', src: 'audio/albums/yiruchujian/yiruchujian-07.mp3', lyric: 'lyrics/yiruchujian-07.json' },
-      { id: 'yiruchujian-08', title: '一花依世界', src: 'audio/albums/yiruchujian/yiruchujian-08.flac', lyric: 'lyrics/yiruchujian-08.json' },
+      { id: 'yiruchujian-08', title: '一花依世界', src: 'audio/albums/yiruchujian/yiruchujian-08.mp3', lyric: 'lyrics/yiruchujian-08.json' },
       { id: 'yiruchujian-09', title: '光与影的对白', src: 'audio/albums/yiruchujian/yiruchujian-09.mp3', lyric: 'lyrics/yiruchujian-09.json' },
       { id: 'yiruchujian-10', title: '为了你唱下去', src: 'audio/albums/yiruchujian/yiruchujian-10.mp3', lyric: 'lyrics/yiruchujian-10.json' }
     ]
@@ -55,16 +55,16 @@ export const ALBUMS: AlbumSection[] = [
     subtitle: '十周年纪念专辑 · 首张 ACE AI 声库',
     cover: 'images/albums/wujinlan.jpg',
     tracks: [
-      { id: 'wujinlan-01', title: '热带夜', src: 'audio/albums/wujinlan/wujinlan-01.flac', lyric: 'lyrics/wujinlan-01.json' },
-      { id: 'wujinlan-02', title: '万能处方', src: 'audio/albums/wujinlan/wujinlan-02.flac', lyric: 'lyrics/wujinlan-02.json' },
-      { id: 'wujinlan-03', title: '免费主义', src: 'audio/albums/wujinlan/wujinlan-03.flac', lyric: 'lyrics/wujinlan-03.json' },
-      { id: 'wujinlan-04', title: '晚安糖果罐', src: 'audio/albums/wujinlan/wujinlan-04.flac', lyric: 'lyrics/wujinlan-04.json' },
-      { id: 'wujinlan-05', title: '恋爱色魔法', src: 'audio/albums/wujinlan/wujinlan-05.flac', lyric: 'lyrics/wujinlan-05.json' },
-      { id: 'wujinlan-06', title: '怪诞集会', src: 'audio/albums/wujinlan/wujinlan-06.flac', lyric: 'lyrics/wujinlan-06.json' },
-      { id: 'wujinlan-07', title: '视线网', src: 'audio/albums/wujinlan/wujinlan-07.flac', lyric: 'lyrics/wujinlan-07.json' },
+      { id: 'wujinlan-01', title: '热带夜', src: 'audio/albums/wujinlan/wujinlan-01.mp3', lyric: 'lyrics/wujinlan-01.json' },
+      { id: 'wujinlan-02', title: '万能处方', src: 'audio/albums/wujinlan/wujinlan-02.mp3', lyric: 'lyrics/wujinlan-02.json' },
+      { id: 'wujinlan-03', title: '免费主义', src: 'audio/albums/wujinlan/wujinlan-03.mp3', lyric: 'lyrics/wujinlan-03.json' },
+      { id: 'wujinlan-04', title: '晚安糖果罐', src: 'audio/albums/wujinlan/wujinlan-04.mp3', lyric: 'lyrics/wujinlan-04.json' },
+      { id: 'wujinlan-05', title: '恋爱色魔法', src: 'audio/albums/wujinlan/wujinlan-05.mp3', lyric: 'lyrics/wujinlan-05.json' },
+      { id: 'wujinlan-06', title: '怪诞集会', src: 'audio/albums/wujinlan/wujinlan-06.mp3', lyric: 'lyrics/wujinlan-06.json' },
+      { id: 'wujinlan-07', title: '视线网', src: 'audio/albums/wujinlan/wujinlan-07.mp3', lyric: 'lyrics/wujinlan-07.json' },
       { id: 'wujinlan-08', title: '喃木诺娜', src: 'audio/albums/wujinlan/wujinlan-08.mp3', lyric: 'lyrics/wujinlan-08.json' },
-      { id: 'wujinlan-09', title: '回调电子万年历可以前往千禧年吗', src: 'audio/albums/wujinlan/wujinlan-09.flac', lyric: 'lyrics/wujinlan-09.json' },
-      { id: 'wujinlan-10', title: '昨日之声', src: 'audio/albums/wujinlan/wujinlan-10.flac', lyric: 'lyrics/wujinlan-10.json' }
+      { id: 'wujinlan-09', title: '回调电子万年历可以前往千禧年吗', src: 'audio/albums/wujinlan/wujinlan-09.mp3', lyric: 'lyrics/wujinlan-09.json' },
+      { id: 'wujinlan-10', title: '昨日之声', src: 'audio/albums/wujinlan/wujinlan-10.mp3', lyric: 'lyrics/wujinlan-10.json' }
     ]
   },
   {
@@ -74,18 +74,18 @@ export const ALBUMS: AlbumSection[] = [
     subtitle: '十二周年纪念专辑',
     cover: 'images/albums/zaisheng.jpg',
     tracks: [
-      { id: 'zaisheng-01', title: '再声 Recall', src: 'audio/albums/zaisheng/zaisheng-01.flac', lyric: 'lyrics/zaisheng-01.json' },
+      { id: 'zaisheng-01', title: '再声 Recall', src: 'audio/albums/zaisheng/zaisheng-01.mp3', lyric: 'lyrics/zaisheng-01.json' },
       { id: 'zaisheng-02', title: '蝴蝶', src: 'audio/albums/zaisheng/zaisheng-02.mp3', lyric: 'lyrics/zaisheng-02.json' },
       { id: 'zaisheng-03', title: '嘘八百', src: 'audio/albums/zaisheng/zaisheng-03.mp3', lyric: 'lyrics/zaisheng-03.json' },
       { id: 'zaisheng-04', title: '心空 feat. HYPER SLASH超级斩', src: 'audio/albums/zaisheng/zaisheng-04.mp3', lyric: 'lyrics/zaisheng-04.json' },
       { id: 'zaisheng-05', title: '歪歪？ feat. Chinese Football', src: 'audio/albums/zaisheng/zaisheng-05.mp3', lyric: 'lyrics/zaisheng-05.json' },
       { id: 'zaisheng-06', title: '心里有鬼 feat. 绿流海GreenBang', src: 'audio/albums/zaisheng/zaisheng-06.mp3', lyric: 'lyrics/zaisheng-06.json' },
       { id: 'zaisheng-07', title: '化作繁星', src: 'audio/albums/zaisheng/zaisheng-07.mp3', lyric: 'lyrics/zaisheng-07.json' },
-      { id: 'zaisheng-08', title: '世末积雨云 feat. 鬼否', src: 'audio/albums/zaisheng/zaisheng-08.flac', lyric: 'lyrics/zaisheng-08.json' },
-      { id: 'zaisheng-09', title: '三月雨', src: 'audio/albums/zaisheng/zaisheng-09.flac', lyric: 'lyrics/zaisheng-09.json' },
+      { id: 'zaisheng-08', title: '世末积雨云 feat. 鬼否', src: 'audio/albums/zaisheng/zaisheng-08.mp3', lyric: 'lyrics/zaisheng-08.json' },
+      { id: 'zaisheng-09', title: '三月雨', src: 'audio/albums/zaisheng/zaisheng-09.mp3', lyric: 'lyrics/zaisheng-09.json' },
       { id: 'zaisheng-10', title: 'Aloud', src: 'audio/albums/zaisheng/zaisheng-10.mp3', lyric: 'lyrics/zaisheng-10.json' },
       { id: 'zaisheng-11', title: '春日平行线', src: 'audio/albums/zaisheng/zaisheng-11.mp3', lyric: 'lyrics/zaisheng-11.json' },
-      { id: 'zaisheng-12', title: '最完美的夏天', src: 'audio/albums/zaisheng/zaisheng-12.flac', lyric: 'lyrics/zaisheng-12.json' }
+      { id: 'zaisheng-12', title: '最完美的夏天', src: 'audio/albums/zaisheng/zaisheng-12.mp3', lyric: 'lyrics/zaisheng-12.json' }
     ]
   },
   {
