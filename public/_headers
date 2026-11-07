@@ -1,0 +1,25 @@
+# Cloudflare Pages 响应头强化（部署时自动应用）
+# 安全防护 + 缓存策略：静态资源长缓存，HTML 不缓存保证更新即时可见
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=2592000
+
+/audio/*
+  Cache-Control: public, max-age=2592000
+  Accept-Ranges: bytes
+
+/lyrics/*
+  Cache-Control: public, max-age=86400
+
+/index.html
+  Cache-Control: no-cache, must-revalidate

@@ -108,6 +108,30 @@
   opacity: 0.55;
 }
 
+/* ---------- 权利提示页脚：纯文字，避开底部内容 ---------- */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px 44px;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--pg-sub);
+}
+
+.footer a {
+  color: var(--pg-sub);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer a:hover {
+  color: var(--pg-ink);
+}
+
 /* ---------- 移动端：顶栏保持单行（logo / 导航槽 / 控件同排），
    PillNav 窄屏自动收合成汉堡按钮（collapse="auto"） ---------- */
 

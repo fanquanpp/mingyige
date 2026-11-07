@@ -101,6 +101,12 @@ export default function SiteChrome({
       </header>
 
       {children}
+
+      {/* 权利提示页脚：非官方粉丝站声明，链接到免责声明页 */}
+      <footer className={styles.footer}>
+        <span>非官方粉丝站 · 素材版权归原权利方所有</span>
+        <a href="#disclaimer" aria-label="查看免责声明">免责声明</a>
+      </footer>
     </main>
   );
 }

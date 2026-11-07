@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /audio/
+Disallow: /video/
+
+# 鸣依阁 —— 个人粉丝向展示站，音源为已购专辑，不提供下载
