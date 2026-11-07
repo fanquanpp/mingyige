@@ -16,8 +16,10 @@ const EASE_IN_OUT: [number, number, number, number] = [0.45, 0, 0.25, 1];
 /**
  * 入场动画：自然播放完 → 全屏点击 → 共鸣过渡页 → 主页。
  * （S p i k 跳过按钮由 App 层常驻提供，覆盖开场/海报/共鸣三个阶段。）
+ * frozen=true（已进入共鸣页）：所有动画立即暂停定格——被黑幕遮住后继续跑的
+ * blur/transform 动画在安卓 WebView 上会冻结在中间帧并产生重绘残影。
  */
-export default function Intro({ onEnter }: { onEnter: () => void }) {
+export default function Intro({ onEnter, frozen = false }: { onEnter: () => void; frozen?: boolean }) {
   // 动画完整播放完毕后才接受全屏点击
   const [ready, setReady] = useState(false);
   // 移动端（粗略判定：小屏 + 触屏）禁用 filter 动画——
@@ -58,11 +60,16 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
     return () => window.removeEventListener('pointerdown', onTap);
   }, [ready, onEnter]);
 
+  // frozen（已进入共鸣页）：整段动画时间线在当前位置定格——
+  // motion 组件全部转静态值（动画目标被覆盖为当前视觉终态，且不再执行），
+  // 纯 CSS 动画层（星光/光点/彩带）由 .frozen 类关闭
   return (
     <>
       <Nav />
 
-      <motion.section className={`${styles.intro} ${ready ? styles.ready : ''}`}>
+      <motion.section
+        className={`${styles.intro} ${ready ? styles.ready : ''} ${frozen ? styles.frozen : ''}`}
+      >
         {/* 画幅外磨砂伪装层：用图片自身放大铺满全屏并深度模糊压暗，
             让不同比例屏幕上的"黑边"变成与画面同色系的磨砂延展
             （position: fixed 铺满视口，不参与舞台裁切） */}
@@ -70,8 +77,8 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
         <motion.div
           className={`${styles.backdrop} ${styles.backdropPoster}`}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 10.4, duration: 2.0, ease: EASE_IN_OUT }}
+          animate={frozen ? { opacity: 1 } : { opacity: 1 }}
+          transition={frozen ? { duration: 0 } : { delay: 10.4, duration: 2.0, ease: EASE_IN_OUT }}
           aria-hidden="true"
         />
 
@@ -80,7 +87,7 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
           className={styles.bg}
           initial={{ scale: 1.08, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 12, ease: 'easeOut' }}
+          transition={frozen ? { duration: 0 } : { duration: 12, ease: 'easeOut' }}
         />
 
         {/* 遮罩：中心轻、四周重，压暗背景突出文字 */}
@@ -114,12 +121,13 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
           transition={{ delay: 2.5, duration: 2.4, ease: EASE_OUT }}
         />
 
-        {/* 文字区：blur(7px) 的光晕汇聚成字；收尾句停留片刻后随海报缓慢溶出 */}
+        {/* 文字区：blur(7px) 的光晕汇聚成字；收尾句停留片刻后随海报缓慢溶出。
+            frozen：文字层立即透明（共鸣黑幕已盖上，中间帧 blur 是安卓残影源头） */}
         <motion.div
           className={styles.textContainer}
           initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ delay: 10.8, duration: 1.4, ease: EASE_IN_OUT }}
+          animate={frozen ? { opacity: 0 } : { opacity: 0 }}
+          transition={frozen ? { duration: 0 } : { delay: 10.8, duration: 1.4, ease: EASE_IN_OUT }}
         >
           {INTRO_LINES.map((line) => (
             <motion.p
@@ -139,23 +147,22 @@ export default function Intro({ onEnter }: { onEnter: () => void }) {
           ))}
         </motion.div>
 
-        {/* 终幕：收尾句停留片刻后，整幅漫画开场图缓慢合拢收尾
-            （横屏用图2 / 竖屏用图3，由 CSS 媒体查询切换；
-              长时深模糊 + easeInOut，与文字溶出充分重叠，避免突变感；
-              移动端降模糊幅度：26px 全屏 blur 逐帧重绘是重影/卡顿主因） */}
+        {/* 终幕：收尾句停留片刻后，整幅漫画开场图缓慢合拢收尾。
+            frozen：海报立即定格终态（无 blur/缩放动画，杜绝中间帧残影） */}
         <motion.div
           className={styles.poster}
-          initial={{ opacity: 0, filter: lite ? 'blur(14px)' : 'blur(26px)', scale: lite ? 1.03 : 1.06 }}
+          initial={frozen ? { opacity: 1, filter: 'blur(0px)', scale: 1 } : { opacity: 0, filter: lite ? 'blur(14px)' : 'blur(26px)', scale: lite ? 1.03 : 1.06 }}
           animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-          transition={{ delay: 10.4, duration: 2.4, ease: EASE_IN_OUT }}
+          transition={frozen ? { duration: 0 } : { delay: 10.4, duration: 2.4, ease: EASE_IN_OUT }}
         />
 
-        {/* 共鸣提示：动画完整播放后浮现，此时全屏点击进入共鸣过渡页 */}
+        {/* 共鸣提示：动画完整播放后浮现，此时全屏点击进入共鸣过渡页。
+            frozen：提示层立即隐藏（黑幕已盖住，不需要它） */}
         <motion.p
           className={styles.tapHint}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 13.2, duration: 1.2, ease: EASE_OUT }}
+          animate={frozen ? { opacity: 0 } : { opacity: 1 }}
+          transition={frozen ? { duration: 0 } : { delay: 13.2, duration: 1.2, ease: EASE_OUT }}
         >
           <span className={styles.tapHintBreath}>轻触共鸣</span>
         </motion.p>

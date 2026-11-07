@@ -124,9 +124,11 @@ export default function App() {
           视觉上处于 opacity:0（.stageFading），且 pointer-events 关闭不挡新页交互 */}
       {staleView === 'intro' && <Intro key={`stale-${runId}`} onEnter={() => {}} />}
       {staleView === 'resonance' && <Resonance key={`stale-${runId}`} onDone={() => {}} />}
-      {/* 现役舞台：共鸣页黑幕合拢期间开场画面挂载其下（渐暗过渡）；leaving 期间冻结 onEnter */}
+      {/* 现役舞台：共鸣页黑幕合拢期间开场画面挂载其下（渐暗过渡）；leaving 期间冻结 onEnter。
+          frozen=true：Intro 所有动画立即暂停定格——安卓 WebView 上被遮住的动画会被冻结在
+          中间帧（blur 半途/重绘残影），这就是「正常进入崩坏」在手机上的形态 */}
       {(view === 'intro' || view === 'resonance') && (
-        <Intro key={runId} onEnter={leaving ? () => {} : () => transitionTo('resonance')} />
+        <Intro key={runId} onEnter={leaving ? () => {} : () => transitionTo('resonance')} frozen={view === 'resonance'} />
       )}
       {view === 'resonance' && <Resonance key={runId} onDone={() => transitionTo(entry ?? 'home')} />}
       {view === 'home' && (

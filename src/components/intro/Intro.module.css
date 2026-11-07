@@ -445,6 +445,26 @@
   cursor: pointer;
 }
 
+/* frozen（已进入共鸣页）：全部纯 CSS 动画立即暂停定格，合成层提示也撤掉——
+   被黑幕遮住后继续跑的动画在安卓 WebView 上冻结在中间帧并产生重绘残影 */
+.frozen .bg,
+.frozen .stars,
+.frozen .starsFar,
+.frozen .particles i,
+.frozen .decor i,
+.frozen .confetti,
+.frozen .tapHintBreath {
+  animation-play-state: paused !important;
+}
+
+.frozen .bg,
+.frozen .backdrop,
+.frozen .backdropPoster,
+.frozen .stars,
+.frozen .starsFar {
+  will-change: auto;
+}
+
 /* 共鸣提示：悬浮在画幅下方的磨砂补边上（fixed 贴视口底部，脱离舞台裁切） */
 .tapHint {
   position: fixed;
