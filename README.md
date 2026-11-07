@@ -75,7 +75,7 @@ npm run preview   # 预览构建产物
 │  ├─ audio/music.ts         # 全站唯一音乐播放器（手势起播/跨标签锁/进度记忆/连播）
 │  ├─ App.tsx                # 开场/页面两态 + 统一退场序 + hash 深链
 │  └─ components/
-│     ├─ site/               # SiteChrome（顶栏+侧滑面板+页脚声明）、WaveBars（已移除）
+│     ├─ site/               # SiteChrome（顶栏+侧滑面板+页脚声明）
 │     ├─ intro/              # 入场动画（frozen 定格、移动端 lite 模式）
 │     ├─ fx/TargetCursor     # 四角括号自定义光标（#66ccff）
 │     ├─ home/               # Hero（40dvh）+ MusicPanel + SongDirectory

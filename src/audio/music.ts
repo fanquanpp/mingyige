@@ -190,11 +190,6 @@ export function pauseMusic() {
   apply();
 }
 
-export function toggleMusic() {
-  if (state.status === 'playing') pauseMusic();
-  else startMusic();
-}
-
 /** 切换曲目（歌曲页点播）：换 src 即可，无需重建元素 */
 export function switchTrack(id: string) {
   const track = findTrack(id);
