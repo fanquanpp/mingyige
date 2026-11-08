@@ -22,16 +22,13 @@ export default function Intro({ onEnter, frozen = false }: { onEnter: () => void
   // 动画完整播放完毕后才接受全屏点击
   const [ready, setReady] = useState(false);
   // 移动端（粗略判定：小屏 + 触屏）禁用 filter 动画——
-  // motion 文档明确 filter 逐帧触发重绘，移动 GPU 上与 text-shadow 叠加会产生文字重影
-  const [lite, setLite] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 820px) and (pointer: coarse)');
-    const update = () => setLite(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
+  // motion 文档明确 filter 逐帧触发重绘，移动 GPU 上与 text-shadow 叠加会产生文字重影。
+  // 必须在首帧就定死（惰性初始化）：若先按桌面路径挂上 blur 再切 lite，
+  // animate 目标换成不含 filter 的版本后，已施加的 blur(7px) 会永远留在文字上（真机实测）。
+  // 触屏设备横竖屏 pointer 恒为 coarse，无需监听断点变化（中途换目标反而会复现此 bug）
+  const [lite] = useState(
+    () => window.matchMedia('(max-width: 820px) and (pointer: coarse)').matches
+  );
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

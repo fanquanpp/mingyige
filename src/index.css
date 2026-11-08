@@ -2,6 +2,30 @@
   color-scheme: light;
 }
 
+/* ---------- 暗色模式：html[data-theme] 由 index.html 首帧引导脚本 + SiteChrome 切换写入。
+   深夜蓝纸感（与开场舞台 #030e1a 同族），天依蓝 #6cf 在暗底上直接作为点缀色 ---------- */
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  scrollbar-color: #3a4a58 transparent; /* 拇指 / 轨道（可继承） */
+}
+
+html[data-theme='dark'] body {
+  background: #161c23;
+  color: #e6edf2;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #3a4a58;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #4c6070;
+  background-clip: content-box;
+}
+
 * {
   box-sizing: border-box;
 }

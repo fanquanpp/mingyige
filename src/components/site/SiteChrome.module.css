@@ -2,8 +2,8 @@
    页面本体由各页面组件以 children 传入；遵守设计禁令（docs/design-rules.md）。 */
 
 .page {
-  /* 亮色单主题（2026-11-07 定）：柔和纸感青灰底，深色形态已删除。
-     白度降了一档（原 #f5fafc），卡片与描边同步放柔。 */
+  /* 亮色主题（2026-11-07 定）：柔和纸感青灰底，白度降了一档（原 #f5fafc）。
+     暗色形态见底部 [data-theme='dark']（2026-11-08 加回：跟随系统 + 手动切换） */
   --pg-bg: #ebf1f4;
   --pg-ink: #16283b;
   --pg-sub: #5f8ba3;
@@ -20,6 +20,21 @@
   background-color: var(--pg-bg);
   color: var(--pg-ink);
   animation: pageIn 0.9s ease-out both;
+}
+
+/* ---------- 暗色主题：深夜蓝纸感，配色对齐移动端系统反色观感。
+   天依蓝提到 #6cf（亮底上用的深青在暗底对比不足）；accent-deep 反向提亮保持层次 ---------- */
+
+[data-theme='dark'] .page {
+  --pg-bg: #161c23;
+  --pg-ink: #e6edf2;
+  --pg-sub: #93a7b6;
+  --pg-accent: #66ccff;
+  --pg-accent-deep: #3fa9dd;
+  --pg-pop: #ff5c8a;
+  --pg-card: #1e262e;
+  --pg-line: #313c46;
+  --pg-bub: rgba(102, 204, 255, 0.3);
 }
 
 @keyframes pageIn {

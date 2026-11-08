@@ -89,6 +89,11 @@
   pointer-events: none;
 }
 
+/* 暗色主题：签名是深蓝墨迹，暗底会沉掉——反色再转回色相，得到浅蓝笔画 */
+[data-theme='dark'] .heroWatermark {
+  filter: invert(0.92) hue-rotate(180deg) saturate(0.9);
+}
+
 .bub {
   position: absolute;
   display: block;

@@ -7,6 +7,19 @@
     <meta name="theme-color" content="#ebf1f4" />
     <link rel="icon" type="image/svg+xml" href="images/icons/icon-tianyi.svg" />
     <title>鸣依阁</title>
+    <script>
+      /* 主题首帧引导：localStorage 记忆 > 系统偏好（跟随系统），在首帧绘制前定死
+         data-theme，暗色用户刷新不闪白。SiteChrome 接管后续切换与记忆。 */
+      (function () {
+        try {
+          var saved = localStorage.getItem('mingyige-theme');
+          var dark =
+            saved === 'dark' ||
+            (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
