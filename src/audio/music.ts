@@ -148,7 +148,7 @@ function apply() {
 
 let gestureArmed = false;
 /** 浏览器拦截自动播放时：首次有效点击（「轻触共鸣」浮现后）响起。
-    排除两类点击：① S p i k 跳过按钮——跳过是「我不想看动画」，不是「我要听音乐」；
+    排除两类点击：① S k i p 跳过按钮——跳过是「我不想看动画」，不是「我要听音乐」；
     ② 开场动画未完成阶段（data-intro-ready 未置位）——此时点击不该起播。
     音乐只在真正进站（轻触共鸣/主页交互）后出现。 */
 function armGestureFallback() {

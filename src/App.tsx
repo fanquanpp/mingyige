@@ -53,7 +53,7 @@ export default function App() {
 
   const onStage = view === 'intro';
 
-  /* 「轻触共鸣」与 S p i k 完全同款退场逻辑（用户最终决定）：
+  /* 「轻触共鸣」与 S k i p 完全同款退场逻辑（用户最终决定）：
      淡出 → 真实绘制帧 → 切页 → 旧舞台延迟卸载。
      Resonance 中间页已随本方案移除——一跳直达主页。 */
   const [leaving, setLeaving] = useState(false);
@@ -96,7 +96,7 @@ export default function App() {
         padding={8}
         dotSize={6}
       />
-      {/* S p i k 跳过：开场/海报阶段常驻，与「轻触共鸣」共用同一退场逻辑。
+      {/* S k i p 跳过：开场/海报阶段常驻，与「轻触共鸣」共用同一退场逻辑。
           data-skip-btn 供 Intro 的 window pointerdown 监听排除（防同帧双触发） */}
       <motion.button
         type="button"
@@ -109,7 +109,7 @@ export default function App() {
         style={{ pointerEvents: onStage ? 'auto' : 'none' }}
         aria-hidden={!onStage}
       >
-        S p i k
+        S k i p
       </motion.button>
       {/* 退场中的旧舞台：切页后继续挂载 600ms（新页已完整绘制），合成层届时才销毁。
           stageHidden：absolute 脱离网格流铺满容器（place-items 会把第二个 grid item
