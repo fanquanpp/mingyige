@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactElement } from 'react';
 import {
+  cyclePlayMode,
   pauseMusic,
   seekTo,
   startMusic,
   stepTrack,
-  switchTrack,
   useMusic
 } from '../../audio/music';
+import type { PlayMode } from '../../audio/music';
 import { ALBUMS, findTrack, trackDisplayName } from '../../data/site-content';
 import styles from './MusicPanel.module.css';
 
@@ -14,6 +16,40 @@ interface LyricLine {
   t: number;
   text: string;
 }
+
+/* 播放模式图标与文案：顺序循环 / 随机 / 单曲循环 */
+const MODE_META: Record<PlayMode, { label: string; cursor: string; icon: ReactElement }> = {
+  order: {
+    label: '顺序循环',
+    cursor: '顺序',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        {/* 首尾相接的双向循环箭头 */}
+        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
+      </svg>
+    )
+  },
+  random: {
+    label: '随机播放',
+    cursor: '随机',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        {/* 交叉换位的随机箭头 */}
+        <path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.83 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+      </svg>
+    )
+  },
+  one: {
+    label: '单曲循环',
+    cursor: '单曲循环',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        {/* 循环箭头 + 中间「1」 */}
+        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z" />
+      </svg>
+    )
+  }
+};
 
 function fmt(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '00:00';
@@ -186,12 +222,13 @@ export default function MusicPanel() {
             </button>
             <button
               type="button"
-              className={styles.switchBtn}
-              onClick={() => track && switchTrack(track.id)}
-              aria-label="重新播放本曲"
-              data-cursor-label="重播"
+              className={styles.ctrlBtn}
+              onClick={cyclePlayMode}
+              aria-label={`播放模式：${MODE_META[music.mode].label}`}
+              data-cursor-label={MODE_META[music.mode].cursor}
+              title={MODE_META[music.mode].label}
             >
-              重播
+              {MODE_META[music.mode].icon}
             </button>
           </div>
 

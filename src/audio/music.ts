@@ -10,11 +10,16 @@ import { DEFAULT_TRACK_ID, findTrack, flatTracks } from '../data/site-content';
 
 export type MusicStatus = 'playing' | 'paused';
 
+/** 播放模式：order 列表顺序循环 / random 随机 / one 单曲循环 */
+export type PlayMode = 'order' | 'random' | 'one';
+
 export interface MusicState {
   /** 用户意图状态：playing 播放中 / paused 已暂停（保留进度） */
   status: MusicStatus;
   /** 当前曲目 id（默认曲见 data/site-content.ts 的 DEFAULT_TRACK_ID） */
   currentId: string;
+  /** 播放模式（顺序/随机/单曲循环），跨刷新记忆 */
+  mode: PlayMode;
   /** 自动播放被浏览器拦截，等待首次用户手势后自动响起 */
   pendingGesture: boolean;
   /** 当前播放位置（秒），随 timeupdate 更新（约 4 次/秒） */
@@ -27,14 +32,22 @@ export interface MusicState {
 export interface MusicCore {
   status: MusicStatus;
   currentId: string;
+  mode: PlayMode;
   pendingGesture: boolean;
 }
 
 const LOCK_KEY = 'mingyige-music-lock';
 const PROGRESS_KEY = 'mingyige-music-progress';
+const MODE_KEY = 'mingyige-music-mode';
 const LOCK_TTL = 2500;
 
 const DEFAULT_TRACK = findTrack(DEFAULT_TRACK_ID) ?? flatTracks()[0];
+
+/** 播放模式恢复：存过就用存的，否则顺序循环 */
+function loadMode(): PlayMode {
+  const raw = safeGet(MODE_KEY);
+  return raw === 'random' || raw === 'one' ? raw : 'order';
+}
 
 const audio = new Audio(DEFAULT_TRACK.src);
 audio.volume = 0.35;
@@ -48,6 +61,7 @@ if (import.meta.env.DEV) {
 let state: MusicState = {
   status: 'paused',
   currentId: DEFAULT_TRACK.id,
+  mode: loadMode(),
   pendingGesture: false,
   time: 0,
   duration: 0
@@ -56,7 +70,12 @@ const listeners = new Set<() => void>();
 /** 低频订阅者：只在 status/currentId/pendingGesture 变化时通知 */
 const coreListeners = new Set<() => void>();
 /** 低频切片快照：getMusicCore 的稳定返回值（useSyncExternalStore 缓存比较用），update 内同步刷新 */
-let lastCore: MusicCore = { status: 'paused', currentId: DEFAULT_TRACK.id, pendingGesture: false };
+let lastCore: MusicCore = {
+  status: 'paused',
+  currentId: DEFAULT_TRACK.id,
+  mode: loadMode(),
+  pendingGesture: false
+};
 
 /* ---------- localStorage 帮手：隐私模式等场景下静默降级 ---------- */
 
@@ -120,11 +139,13 @@ function update(patch: Partial<MusicState>) {
   if (
     prev.status !== state.status ||
     prev.currentId !== state.currentId ||
+    prev.mode !== state.mode ||
     prev.pendingGesture !== state.pendingGesture
   ) {
     lastCore = {
       status: state.status,
       currentId: state.currentId,
+      mode: state.mode,
       pendingGesture: state.pendingGesture
     };
     coreListeners.forEach(fn => fn());
@@ -232,12 +253,30 @@ export function seekTo(seconds: number) {
   }
 }
 
-/** 上一首 / 下一首（循环列表）；dir=-1 上一首 */
+/** 上一首 / 下一首（循环列表）；dir=-1 上一首。
+    随机模式下前后翻页也随机选曲（避开当前曲）。 */
 export function stepTrack(dir: -1 | 1) {
+  switchTrack(pickNextId(dir));
+}
+
+/** 按播放模式挑下一首的 id（不触发播放，纯选曲） */
+function pickNextId(dir: -1 | 1): string {
   const list = flatTracks();
+  if (state.mode === 'random' && list.length > 1) {
+    // 排除当前曲后均匀随机
+    const others = list.filter(track => track.id !== state.currentId);
+    return others[Math.floor(Math.random() * others.length)].id;
+  }
   const index = list.findIndex(track => track.id === state.currentId);
   const next = list[(index + dir + list.length) % list.length];
-  switchTrack(next.id);
+  return next.id;
+}
+
+/** 切换播放模式：顺序 → 随机 → 单曲循环，循环往返并记忆 */
+export function cyclePlayMode() {
+  const next: PlayMode = state.mode === 'order' ? 'random' : state.mode === 'random' ? 'one' : 'order';
+  safeSet(MODE_KEY, next);
+  update({ mode: next });
 }
 
 export function subscribeMusic(fn: () => void) {
@@ -282,13 +321,13 @@ audio.addEventListener('durationchange', () => {
   update({ duration: Number.isFinite(audio.duration) ? audio.duration : 0 });
 });
 
-// 单曲播完自动接下一首，循环整个列表
+// 单曲播完：单曲循环=重播本曲，否则按模式接下一首
 audio.addEventListener('ended', () => {
-  const list = flatTracks();
-  const index = list.findIndex(track => track.id === state.currentId);
-  const next = list[(index + 1) % list.length];
+  const nextId = state.mode === 'one' ? state.currentId : pickNextId(1);
+  const next = findTrack(nextId);
+  if (!next) return;
   audio.src = next.src;
-  update({ currentId: next.id, time: 0, duration: 0 });
+  update({ currentId: nextId, time: 0, duration: 0 });
   apply();
 });
 

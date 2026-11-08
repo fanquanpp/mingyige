@@ -197,22 +197,6 @@
   border-color: var(--pg-accent);
 }
 
-.switchBtn {
-  font-family: inherit;
-  font-size: 13px;
-  letter-spacing: 2px;
-  color: var(--pg-sub);
-  background: none;
-  border: none;
-  border-radius: 0;
-  padding: 4px 2px;
-  cursor: pointer;
-}
-
-.switchBtn:hover {
-  color: var(--pg-ink);
-}
-
 /* ---------- 进度条 ---------- */
 
 .progress {
