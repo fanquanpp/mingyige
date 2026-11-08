@@ -9,23 +9,24 @@
   min-height: 0;
   /* 拉满 grid 行高：与右侧目录列同高，消除底部间隙 */
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px, 1.4dvh, 14px);
+  /* 面板自身即网格：上排 = 唱片|曲目信息，下排 = 歌词通栏；
+     移动端（见底部媒体查询）改为 左列 = 唱片+信息、右列 = 歌词（框中区域） */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'disc meta'
+    'lyric lyric';
+  /* 行间距沿用原上下区间距，列间距沿用原唱片与信息区间距 */
+  gap: clamp(10px, 1.4dvh, 14px) clamp(16px, 2vw, 26px);
 }
 
 /* ---------- 唱片区 ---------- */
 
-.top {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: clamp(16px, 2vw, 26px);
-}
-
 .discStage {
   position: relative;
-  flex: none;
+  grid-area: disc;
+  align-self: center; /* 与信息列互相垂直居中（对齐原 flex 的 align-items: center） */
   /* 唱片随视口高度收缩：矮视口（小平板横屏）下不挤占歌词区 */
   width: clamp(120px, 14.5dvh, 190px);
   height: clamp(110px, 13.5dvh, 170px);
@@ -104,8 +105,23 @@
 /* ---------- 曲目信息与控制 ---------- */
 
 .meta {
-  flex: 1;
+  grid-area: meta;
+  align-self: center;
   min-width: 0; /* 允许收缩到内容宽以下：曲名省略号生效的前提 */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 信息/控制两组：桌面端同住 meta 列（组间距与原先一致）；
+   移动端 meta 以 display:contents 拆开，两组各自入格（信息在唱片下、控制通栏） */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ctrl {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -245,7 +261,7 @@
 /* ---------- 歌词区 ---------- */
 
 .lyricWrap {
-  flex: 1;
+  grid-area: lyric;
   min-height: 0; /* 单屏构图：歌词区吃掉面板剩余高度，超出内部滚动 */
   display: flex;
   flex-direction: column;
@@ -297,12 +313,29 @@
   .panel {
     min-height: auto;
     padding: 16px;
+    /* 分区：左列 = 唱片 + 信息，右列 = 歌词（完整区域不折窄），控制区通栏垫底 */
+    grid-template-areas:
+      'disc lyric'
+      'info lyric'
+      'ctrl ctrl';
+    grid-template-rows: auto auto auto;
+    row-gap: 14px;
+    column-gap: 16px;
   }
 
-  .top {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
+  /* 拆掉 meta 盒：信息/控制两组直接成为网格项 */
+  .meta {
+    display: contents;
+  }
+
+  .info {
+    grid-area: info;
+    /* 左列贴住唱片宽度，把剩余宽度尽量让给歌词列 */
+    max-width: 160px;
+  }
+
+  .ctrl {
+    grid-area: ctrl;
   }
 
   .discStage {
@@ -325,10 +358,26 @@
     height: 68px;
   }
 
-  /* 竖屏放宽：曲名允许换行（宽度有限，省略号会藏太多内容） */
+  /* 竖屏放宽：曲名允许换行（宽度有限，省略号会藏太多内容）；
+     信息列变窄后固定高度占位会让第二行溢出，改回自适应 */
   .trackTitle {
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+    height: auto;
+  }
+
+  /* 歌词列高度锁定为左列（唱片+信息）总高：行高只由左列决定。
+     内盒绝对定位填满外壳，歌词全高不再参与行高计算，超出内部滚动（同桌面单屏构图） */
+  .lyricWrap {
+    position: relative;
+    min-height: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .lyricBox {
+    position: absolute;
+    inset: 0;
   }
 }

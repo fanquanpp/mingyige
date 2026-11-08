@@ -120,25 +120,29 @@ export default function MusicPanel() {
 
   return (
     <section className={styles.panel} aria-label="音乐播放器">
-      <div className={styles.top}>
-        {/* 唱片区：偏移色块 + 旋转唱片 + 圆标盘心 */}
-        <div className={styles.discStage}>
-          <i className={styles.discBlock} aria-hidden="true" />
-          <div className={`${styles.disc} ${playing ? '' : styles.discPaused}`}>
-            <svg className={styles.discGrooves} viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="97" className={styles.grooveOuter} />
-              <circle cx="100" cy="100" r="86" className={styles.groove} />
-              <circle cx="100" cy="100" r="74" className={styles.groove} />
-              <circle cx="100" cy="100" r="62" className={styles.groove} />
-              <circle cx="100" cy="100" r="50" className={styles.grooveAccent} />
-            </svg>
-            <img className={styles.discLabel} src="images/brand/site-seal.webp" alt="" />
-          </div>
+      {/* 唱片区：偏移色块 + 旋转唱片 + 圆标盘心 */}
+      <div className={styles.discStage}>
+        <i className={styles.discBlock} aria-hidden="true" />
+        <div className={`${styles.disc} ${playing ? '' : styles.discPaused}`}>
+          <svg className={styles.discGrooves} viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="97" className={styles.grooveOuter} />
+            <circle cx="100" cy="100" r="86" className={styles.groove} />
+            <circle cx="100" cy="100" r="74" className={styles.groove} />
+            <circle cx="100" cy="100" r="62" className={styles.groove} />
+            <circle cx="100" cy="100" r="50" className={styles.grooveAccent} />
+          </svg>
+          <img className={styles.discLabel} src="images/brand/site-seal.webp" alt="" />
         </div>
+      </div>
 
-        <div className={styles.meta}>
+      <div className={styles.meta}>
+        {/* 信息区：曲名 + 专辑（移动端在唱片正下方） */}
+        <div className={styles.info}>
           <p className={styles.trackTitle}>{track ? trackDisplayName(track.title) : ''}</p>
           <p className={styles.trackAlbum}>{albumLabel}</p>
+        </div>
+        {/* 控制区：按钮 + 进度 + 时间（移动端为通栏行） */}
+        <div className={styles.ctrl}>
           <div className={styles.controls}>
             <button
               type="button"
@@ -217,7 +221,7 @@ export default function MusicPanel() {
         </div>
       </div>
 
-      {/* 歌词区 */}
+      {/* 歌词区：桌面 = 面板下方通栏；移动端 = 移入控制区右侧的框中区域 */}
       <div className={styles.lyricWrap}>
         <div className={styles.lyricBox} ref={lyricBoxRef}>
           {lyrics && lyrics.length ? (
