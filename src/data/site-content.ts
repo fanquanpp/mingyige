@@ -155,10 +155,10 @@ export interface GalleryItem {
 }
 
 export const GALLERY: GalleryItem[] = [
-  { src: 'images/gallery/luotianyi-illus-wide.webp', title: '洛天依插画（横版）', note: '白裙 · 水晶琴键', category: '插画' },
-  { src: 'images/gallery/luotianyi-illus-tall.webp', title: '洛天依插画（竖版）', note: '上一幅的竖构图', category: '插画' },
-  { src: 'images/gallery/luotianyi-group-water.webp', title: '洛天依群像', note: '荷塘水波 · 夏日', category: '插画' },
+  { src: 'images/gallery/luotianyi-illus-wide.webp', title: '插画01（横版）', note: '十三周年 · 专辑', category: '插画' },
+  { src: 'images/gallery/luotianyi-illus-tall.webp', title: '插画02（竖版）', note: '十三周年 · 专辑', category: '插画' },
+  { src: 'images/gallery/luotianyi-group-water.webp', title: '插画03', note: '十四周年 · 专辑', category: '插画' },
   { src: 'images/gallery/vsinger-group-art.webp', title: 'VOCALOID CHINA PROJECT', note: '官方插画 · illust ideolo@NEKO WORKI', category: '官方物料' },
-  { src: 'images/gallery/project-poster.webp', title: '洛天依立绘', note: '透明底素材', category: '官方物料' },
-  { src: 'images/brand/site-seal.webp', title: '洛天依圆标', note: '站章', category: '品牌标识' }
+  { src: 'images/gallery/project-poster.webp', title: '插画04', note: '日语声库 · 立绘', category: '官方物料' },
+  { src: 'images/brand/site-seal.webp', title: '洛天依', note: 'Vinger', category: '品牌标识' }
 ];
