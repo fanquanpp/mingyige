@@ -1,4 +1,4 @@
-/** 音乐专辑列表与图集素材。音源为已购四张官方专辑（客户端下载，无损优先）；歌词在 public/lyrics/<trackId>.json；MV 仅暂存未使用。图集说明只写画面可验证内容。 */
+/** 音乐专辑列表与图集素材。音源为已购五张官方专辑（客户端下载，无损优先）；歌词在 public/lyrics/<trackId>.json；MV 仅暂存未使用。图集说明只写画面可验证内容。 */
 
 export interface MusicTrack {
   id: string;
@@ -18,16 +18,7 @@ export interface AlbumSection {
   tracks: MusicTrack[];
 }
 
-/** 进站自动播放的默认曲（钢琴版，见 src/audio/music.ts） */
-export const DEFAULT_TRACK_ID = 'wan-fen-zhi-de-guang-piano';
-
-export const PIANO_TRACK: MusicTrack = {
-  id: DEFAULT_TRACK_ID,
-  title: '万分之一的光（钢琴版）',
-  src: 'audio/bgm-ten-thousandth-of-light.mp3'
-};
-
-/** 已购专辑（按发行时间排序） */
+/** 全站播放顺序 = 五张官方专辑曲目（已删除进站钢琴默认曲） */
 export const ALBUMS: AlbumSection[] = [
   {
     key: 'yiruchujian',
@@ -129,11 +120,11 @@ export const ALBUMS: AlbumSection[] = [
   }
 ];
 
-/** 全站播放顺序：默认曲在最前，随后按专辑曲目（数据静态，缓存结果避免每次重建数组） */
+/** 全站播放顺序：按专辑曲目平铺（数据静态，缓存结果避免每次重建数组） */
 let flatCache: MusicTrack[] | null = null;
 
 export function flatTracks(): MusicTrack[] {
-  if (!flatCache) flatCache = [PIANO_TRACK, ...ALBUMS.flatMap(album => album.tracks)];
+  if (!flatCache) flatCache = ALBUMS.flatMap(album => album.tracks);
   return flatCache;
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { pauseMusic, startMusic, useMusicCore } from '../../audio/music';
+import { toggleMute, useMusicCore } from '../../audio/music';
 import { MENU_ITEMS, PAGE_NAV, type PageView } from '../../navigation';
 import BrandLogo from '../brand/BrandLogo';
 import PillNav from '../nav/PillNav';
@@ -46,9 +46,8 @@ export default function SiteChrome({
   fit?: boolean;
   children: ReactNode;
 }) {
-  // 低频订阅：顶栏只关心播放态，不随进度更新重渲染整个外壳
+  // 低频订阅：顶栏只关心静音态，不随进度更新重渲染整个外壳
   const music = useMusicCore();
-  const paused = music.status === 'paused';
   // 右侧滑入面板开关：点击 logo 星芒切换
   const [panelOpen, setPanelOpen] = useState(false);
   // 色彩模式与系统偏好（auto 时联动）
@@ -151,10 +150,11 @@ export default function SiteChrome({
           </button>
           <button
             type="button"
-            className={`${styles.musicText} ${paused ? styles.musicPaused : ''} cursor-target`}
-            data-cursor-label={paused ? '播放音乐' : '暂停音乐'}
-            onClick={paused ? startMusic : pauseMusic}
-            aria-label={paused ? '播放音乐' : '暂停音乐'}
+            className={`${styles.musicText} ${music.muted ? styles.musicMuted : ''} cursor-target`}
+            data-cursor-label={music.muted ? '取消静音' : '静音'}
+            onClick={toggleMute}
+            aria-label={music.muted ? '取消静音' : '静音'}
+            aria-pressed={music.muted}
           >
             音乐
           </button>
@@ -163,11 +163,13 @@ export default function SiteChrome({
 
       {children}
 
-      {/* 权利提示页脚：非官方粉丝站声明，链接到免责声明页 */}
-      <footer className={styles.footer}>
-        <span>非官方粉丝站 · 素材版权归原权利方所有</span>
-        <a href="#disclaimer" aria-label="查看免责声明">免责声明</a>
-      </footer>
+      {/* 权利提示页脚：仅首页/图集展示（歌曲页单屏构图与免责声明页自带版头，不放页脚） */}
+      {(view === 'home' || view === 'gallery') && (
+        <footer className={styles.footer}>
+          <span>非官方粉丝站 · 素材版权归原权利方所有</span>
+          <a href="#disclaimer" aria-label="查看免责声明">免责声明</a>
+        </footer>
+      )}
     </main>
   );
 }

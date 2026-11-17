@@ -1,11 +1,11 @@
 import { useSyncExternalStore } from 'react';
-import { DEFAULT_TRACK_ID, findTrack, flatTracks } from '../data/site-content';
+import { findTrack, flatTracks } from '../data/site-content';
 
 /**
- * 全站唯一音乐播放器：单音频实例 + 单列表（默认曲钢琴版在最前）。
+ * 全站唯一音乐播放器：单音频实例 + 单列表（五张官方专辑曲目）。
  * 首次用户手势才出声（不开自动播放，机制上杜绝多标签/多表面叠加出声）；
  * 单曲播完自动接下一首循环列表；跨标签唯一播放权（localStorage 锁+心跳）；
- * 默认曲进度记忆（刷新续播）；iOS 解锁绑定元素：切曲目换 src 即可。
+ * iOS 解锁绑定元素：切曲目换 src 即可。
  */
 
 export type MusicStatus = 'playing' | 'paused';
@@ -16,12 +16,14 @@ export type PlayMode = 'order' | 'random' | 'one';
 export interface MusicState {
   /** 用户意图状态：playing 播放中 / paused 已暂停（保留进度） */
   status: MusicStatus;
-  /** 当前曲目 id（默认曲见 data/site-content.ts 的 DEFAULT_TRACK_ID） */
+  /** 当前曲目 id */
   currentId: string;
   /** 播放模式（顺序/随机/单曲循环），跨刷新记忆 */
   mode: PlayMode;
   /** 自动播放被浏览器拦截，等待首次用户手势后自动响起 */
   pendingGesture: boolean;
+  /** 静音开关：只压低音量，不改变播放状态（顶栏开关用） */
+  muted: boolean;
   /** 当前播放位置（秒），随 timeupdate 更新（约 4 次/秒） */
   time: number;
   /** 当前曲目总时长（秒），元数据加载后更新 */
@@ -34,14 +36,17 @@ export interface MusicCore {
   currentId: string;
   mode: PlayMode;
   pendingGesture: boolean;
+  muted: boolean;
 }
 
 const LOCK_KEY = 'mingyige-music-lock';
 const PROGRESS_KEY = 'mingyige-music-progress';
 const MODE_KEY = 'mingyige-music-mode';
+const MUTE_KEY = 'mingyige-music-muted';
 const LOCK_TTL = 2500;
 
-const DEFAULT_TRACK = findTrack(DEFAULT_TRACK_ID) ?? flatTracks()[0];
+/** 初始曲目 = 列表第一首（列表首曲，不做自动播放） */
+const FIRST_TRACK = flatTracks()[0];
 
 /** 播放模式恢复：存过就用存的，否则顺序循环 */
 function loadMode(): PlayMode {
@@ -49,9 +54,15 @@ function loadMode(): PlayMode {
   return raw === 'random' || raw === 'one' ? raw : 'order';
 }
 
-const audio = new Audio(DEFAULT_TRACK.src);
+/** 静音开关恢复（跨刷新记忆） */
+function loadMuted(): boolean {
+  return safeGet(MUTE_KEY) === '1';
+}
+
+const audio = new Audio(FIRST_TRACK.src);
 audio.volume = 0.35;
 audio.preload = 'auto';
+if (loadMuted()) audio.muted = true;
 
 // 开发环境暴露调试句柄（构建产物中剔除）
 if (import.meta.env.DEV) {
@@ -60,9 +71,10 @@ if (import.meta.env.DEV) {
 
 let state: MusicState = {
   status: 'paused',
-  currentId: DEFAULT_TRACK.id,
+  currentId: FIRST_TRACK.id,
   mode: loadMode(),
   pendingGesture: false,
+  muted: loadMuted(),
   time: 0,
   duration: 0
 };
@@ -72,9 +84,10 @@ const coreListeners = new Set<() => void>();
 /** 低频切片快照：getMusicCore 的稳定返回值（useSyncExternalStore 缓存比较用），update 内同步刷新 */
 let lastCore: MusicCore = {
   status: 'paused',
-  currentId: DEFAULT_TRACK.id,
+  currentId: FIRST_TRACK.id,
   mode: loadMode(),
-  pendingGesture: false
+  pendingGesture: false,
+  muted: loadMuted()
 };
 
 /* ---------- localStorage 帮手：隐私模式等场景下静默降级 ---------- */
@@ -140,13 +153,15 @@ function update(patch: Partial<MusicState>) {
     prev.status !== state.status ||
     prev.currentId !== state.currentId ||
     prev.mode !== state.mode ||
-    prev.pendingGesture !== state.pendingGesture
+    prev.pendingGesture !== state.pendingGesture ||
+    prev.muted !== state.muted
   ) {
     lastCore = {
       status: state.status,
       currentId: state.currentId,
       mode: state.mode,
-      pendingGesture: state.pendingGesture
+      pendingGesture: state.pendingGesture,
+      muted: state.muted
     };
     coreListeners.forEach(fn => fn());
   }
@@ -279,6 +294,15 @@ export function cyclePlayMode() {
   update({ mode: next });
 }
 
+/** 静音开关：只压低声音，不碰播放状态（曲目继续走，取消静音原样续播）。
+ *  顶栏「音乐」按钮语义——静音开关而非播放控制。 */
+export function toggleMute() {
+  const muted = !state.muted;
+  audio.muted = muted;
+  safeSet(MUTE_KEY, muted ? '1' : '0');
+  update({ muted });
+}
+
 export function subscribeMusic(fn: () => void) {
   listeners.add(fn);
   return () => {
@@ -336,12 +360,12 @@ audio.addEventListener('error', () => {
   update({ status: 'paused' });
 });
 
-// 心跳：持有播放权时定期续锁，并保存默认曲的进度
+// 心跳：持有播放权时定期续锁，并保存首曲的进度
 setInterval(() => {
   if (state.status === 'playing' && !audio.paused) {
     claimLeadership();
-    if (state.currentId === DEFAULT_TRACK.id) {
-      safeSet(PROGRESS_KEY, JSON.stringify({ id: DEFAULT_TRACK.id, time: audio.currentTime }));
+    if (state.currentId === FIRST_TRACK.id) {
+      safeSet(PROGRESS_KEY, JSON.stringify({ id: FIRST_TRACK.id, time: audio.currentTime }));
     }
   }
 }, 2000);
@@ -361,9 +385,9 @@ window.addEventListener('storage', event => {
 });
 
 // 离开页面：保存进度并归还播放权。
-// 进度记忆只针对默认曲——播的是其他曲目时不覆盖，避免下次进站恢复到错误位置
+// 进度记忆只针对首曲——播的是其他曲目时不覆盖，避免下次进站恢复到错误位置
 window.addEventListener('pagehide', () => {
-  if (!audio.paused && state.currentId === DEFAULT_TRACK.id) {
+  if (!audio.paused && state.currentId === FIRST_TRACK.id) {
     safeSet(
       PROGRESS_KEY,
       JSON.stringify({ id: state.currentId, time: audio.currentTime })
@@ -372,10 +396,10 @@ window.addEventListener('pagehide', () => {
   releaseLeadershipIfOwner();
 });
 
-// 进度恢复：仅默认曲（进站总是从默认曲开始），刷新后从上次位置继续
+// 进度恢复：仅首曲，刷新后从上次位置继续
 try {
   const saved = JSON.parse(safeGet(PROGRESS_KEY) || 'null');
-  if (saved && saved.id === DEFAULT_TRACK.id && saved.time > 0) {
+  if (saved && saved.id === FIRST_TRACK.id && saved.time > 0) {
     audio.addEventListener(
       'loadedmetadata',
       () => {

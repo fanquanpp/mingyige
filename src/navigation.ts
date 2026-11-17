@@ -28,14 +28,15 @@ export const PAGE_NAV: PillNavItem[] = [
   { label: '图集', href: '#gallery', ariaLabel: '去图集页' }
 ];
 
-/* 侧边栏目录：全部 / 五张专辑（直达对应筛选视图）/ 图集 / 免责声明 */
+/* 侧边栏目录：全部（首页）/ 五本歌词本（#songs/<key> 隐藏页）/ 图集 / 免责声明。
+   职能划分：顶栏 nav = 页面（播放器/图集）；侧边栏 = 歌词本与声明。 */
 export const MENU_ITEMS: StaggeredMenuItem[] = [
   { label: '全部', ariaLabel: '回到首页', link: '#home' },
-  { label: '依如初见', ariaLabel: '播放依如初见', link: '#songs/yiruchujian' },
-  { label: '无尽蓝', ariaLabel: '播放无尽蓝', link: '#songs/wujinlan' },
-  { label: '再生', ariaLabel: '播放再生', link: '#songs/zaisheng' },
-  { label: '四重奏', ariaLabel: '播放四重奏', link: '#songs/sichongzou' },
-  { label: 'Lost In Tianyi', ariaLabel: '播放 Lost In Tianyi', link: '#songs/lostintianyi' },
+  { label: '依如初见', ariaLabel: '翻阅依如初见歌词本', link: '#songs/yiruchujian' },
+  { label: '无尽蓝', ariaLabel: '翻阅无尽蓝歌词本', link: '#songs/wujinlan' },
+  { label: '再生', ariaLabel: '翻阅再生歌词本', link: '#songs/zaisheng' },
+  { label: '四重奏', ariaLabel: '翻阅四重奏歌词本', link: '#songs/sichongzou' },
+  { label: 'Lost In Tianyi', ariaLabel: '翻阅 Lost In Tianyi 歌词本', link: '#songs/lostintianyi' },
   { label: '图集', ariaLabel: '查看图集', link: '#gallery' },
   { label: '免责声明', ariaLabel: '查看免责声明', link: '#disclaimer' }
 ];

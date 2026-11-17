@@ -8,12 +8,15 @@ import styles from './DisclaimerPage.module.css';
 export default function DisclaimerPage() {
   return (
     <SiteChrome view="disclaimer">
-      <section className={styles.header}>
+      <div className={styles.page}>
+        {/* 背景装饰：竖排「声明」水印 + 天依小像（与歌曲页同语言） */}
+        <p className={styles.pageNo} aria-hidden="true">声明</p>
+        <img className={styles.deco} src="images/deco/tianyi-yi.webp" alt="" aria-hidden="true" />
+
         <h1 className={styles.title}>免责声明</h1>
         <p className={styles.updated}>最后更新 · 2026-11-07</p>
-      </section>
 
-      <div className={styles.body}>
+        <div className={styles.body}>
         <section className={styles.block}>
           <h2 className={styles.blockTitle}>站点性质</h2>
           <p className={styles.text}>
@@ -60,6 +63,7 @@ export default function DisclaimerPage() {
             本站为静态免费站点，不承诺服务可用性；因托管服务变更、素材下架等导致的内容缺失不做另行通知。访问本站即视为已知悉并同意上述条款。
           </p>
         </section>
+      </div>
       </div>
     </SiteChrome>
   );

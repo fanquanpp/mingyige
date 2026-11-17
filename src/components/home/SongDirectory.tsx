@@ -1,4 +1,4 @@
-import { ALBUMS, PIANO_TRACK, trackDisplayName, type MusicTrack } from '../../data/site-content';
+import { ALBUMS, trackDisplayName, type MusicTrack } from '../../data/site-content';
 import { pauseMusic, playTrack, useMusicCore } from '../../audio/music';
 import styles from './SongDirectory.module.css';
 
@@ -42,7 +42,6 @@ export default function SongDirectory({ onReplay }: { onReplay: () => void }) {
   return (
     <aside className={styles.directory} aria-label="歌曲目录">
       <div className={styles.scroll}>
-        <ul className={styles.list}>{row(PIANO_TRACK, '00')}</ul>
         {ALBUMS.map(album => (
           <section key={album.key}>
             <p className={styles.albumHead}>

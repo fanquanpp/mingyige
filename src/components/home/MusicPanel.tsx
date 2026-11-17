@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactElement } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   cyclePlayMode,
   pauseMusic,
@@ -8,58 +7,11 @@ import {
   stepTrack,
   useMusic
 } from '../../audio/music';
-import type { PlayMode } from '../../audio/music';
+import { useLyrics, useActiveLyric, scrollToActiveLine, useProgressSeek } from '../../audio/lyrics';
+import { MODE_META, fmt } from '../shared/playerBits';
 import { ALBUMS, findTrack, trackDisplayName } from '../../data/site-content';
 import styles from './MusicPanel.module.css';
 
-interface LyricLine {
-  t: number;
-  text: string;
-}
-
-/* 播放模式图标与文案：顺序循环 / 随机 / 单曲循环 */
-const MODE_META: Record<PlayMode, { label: string; cursor: string; icon: ReactElement }> = {
-  order: {
-    label: '顺序循环',
-    cursor: '顺序',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        {/* 首尾相接的双向循环箭头 */}
-        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
-      </svg>
-    )
-  },
-  random: {
-    label: '随机播放',
-    cursor: '随机',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        {/* 交叉换位的随机箭头 */}
-        <path d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.83 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
-      </svg>
-    )
-  },
-  one: {
-    label: '单曲循环',
-    cursor: '单曲循环',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        {/* 循环箭头 + 中间「1」 */}
-        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z" />
-      </svg>
-    )
-  }
-};
-
-function fmt(sec: number): string {
-  if (!Number.isFinite(sec) || sec < 0) return '00:00';
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
-/* 歌词按曲目懒加载（每首一个 JSON），缓存到组件生命周期内 */
-const lyricCache = new Map<string, LyricLine[] | null>();
 export default function MusicPanel() {
   const music = useMusic();
   const track = findTrack(music.currentId);
@@ -67,91 +19,18 @@ export default function MusicPanel() {
   const albumOfTrack = track ? ALBUMS.find(album => album.tracks.some(item => item.id === track.id)) : null;
   const albumLabel = albumOfTrack ? `《${albumOfTrack.title}》` : '';
 
-  const [lyrics, setLyrics] = useState<LyricLine[] | null>(null);
   const lyricBoxRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
 
-  // 歌词懒加载 + 缓存；换曲时先清掉上一首的歌词与滚动位置，避免串台
+  /* 歌词懒加载 + 当前行 + 自动滚动（共享逻辑见 src/audio/lyrics.ts） */
+  const lyrics = useLyrics(track?.id, track?.lyric);
+  const activeIndex = useActiveLyric(lyrics, music.time);
+
   useEffect(() => {
-    if (!track) return;
-    const cached = lyricCache.get(track.id);
-    if (cached !== undefined) {
-      lyricBoxRef.current?.scrollTo({ top: 0 });
-      setLyrics(cached);
-      return;
-    }
-    lyricBoxRef.current?.scrollTo({ top: 0 });
-    setLyrics(null);
-    if (!track.lyric) {
-      lyricCache.set(track.id, null);
-      return;
-    }
-    let alive = true;
-    fetch(track.lyric)
-      .then(res => res.json())
-      .then(json => {
-        const lines = (json.lines || []) as LyricLine[];
-        lyricCache.set(track.id, lines);
-        if (alive) setLyrics(lines);
-      })
-      .catch(() => {
-        lyricCache.set(track.id, null);
-        if (alive) setLyrics(null);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [track]);
-
-  // 当前行：time 之前最近的歌词行
-  const activeIndex = useMemo(() => {
-    if (!lyrics) return -1;
-    let idx = -1;
-    for (let i = 0; i < lyrics.length; i++) {
-      if (lyrics[i].t <= music.time + 0.35) idx = i;
-      else break;
-    }
-    return idx;
-  }, [lyrics, music.time]);
-
-  // 歌词自动滚动到当前行
-  useEffect(() => {
-    const box = lyricBoxRef.current;
-    if (!box || activeIndex < 0) return;
-    const lineEl = box.querySelector<HTMLElement>(`[data-line="${activeIndex}"]`);
-    if (!lineEl) return;
-    box.scrollTo({
-      top: lineEl.offsetTop - box.clientHeight / 2 + lineEl.clientHeight / 2,
-      behavior: 'smooth'
-    });
+    scrollToActiveLine(lyricBoxRef.current, activeIndex);
   }, [activeIndex]);
 
-  // 进度条 seek（点击/拖拽共用）
-  const seekFromPointer = (clientX: number) => {
-    const bar = progressRef.current;
-    if (!bar || !music.duration) return;
-    const rect = bar.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    seekTo(ratio * music.duration);
-  };
-
-  const onSeek = (event: React.MouseEvent<HTMLDivElement>) => {
-    seekFromPointer(event.clientX);
-  };
-
-  const onProgressPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || !music.duration) return;
-    event.preventDefault();
-    seekFromPointer(event.clientX);
-    const onMove = (move: PointerEvent) => seekFromPointer(move.clientX);
-    const onUp = () => {
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  };
-
+  /* 进度条 seek（共享逻辑） */
+  const { progressRef, onPointerDown: onProgressPointerDown } = useProgressSeek(music.duration, seekTo);
   const pct = music.duration ? Math.min(100, (music.time / music.duration) * 100) : 0;
 
   return (
@@ -235,7 +114,6 @@ export default function MusicPanel() {
           <div
             className={styles.progress}
             ref={progressRef}
-            onClick={onSeek}
             onPointerDown={onProgressPointerDown}
             role="slider"
             aria-label="播放进度"
@@ -272,7 +150,7 @@ export default function MusicPanel() {
               </p>
             ))
           ) : (
-            <p className={styles.lyricEmpty}>{track && track.id === 'wan-fen-zhi-de-guang-piano' ? '纯音乐' : '歌词整理中'}</p>
+            <p className={styles.lyricEmpty}>{track && !track.lyric ? '纯音乐' : '歌词整理中'}</p>
           )}
         </div>
       </div>
